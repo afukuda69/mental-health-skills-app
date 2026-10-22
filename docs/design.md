@@ -22,40 +22,20 @@ The app **cannot detect distress**. It knows only what the user taps or types, a
 
 ```mermaid
 flowchart TD
-    E["Entry: 'How are you right now?'<br/>2–3 options · 'Use my usual' if history exists"]
-    E -->|picks an option| P["Skill picker<br/>(usual skill labelled, not preselected)"]
-    E -->|Use my usual| S1
-    P -->|user taps a skill| S1
-
-    subgraph EX["Exercise: contracted UI, one step per screen<br/>always visible: Stop exercise + Crisis support"]
-        S1["Step 1 (fixed text from app)"] --> S2["Step 2 … step n"]
-        S2 --> ACK{"Model ack call<br/>timeout 5s"}
-        ACK -->|ok + passes output check| A1["Show model acknowledgment"]
-        ACK -->|error / timeout / rejected| A2["Show fixed fallback text"]
-    end
-
-    A1 --> C["Check-in: Helped / Didn't help / Skip"]
-    A2 --> C
-    C --> D["Done screen"]
-    D -->|Back| E
-    D -->|Close| X(["Close tab"])
-
-    S1 -->|Stop exercise| SE["Save session: exited_early = 1<br/>(no confirm dialog)"]
-    S2 -->|Stop exercise| SE
-    A1 -->|Stop exercise| SE
-    A2 -->|Stop exercise| SE
-    SE --> D
-
-    S1 -.->|Crisis support| CR["Crisis panel<br/>static frontend component<br/>no backend, no model"]
-    S2 -.->|Crisis support| CR
-    E -.-> CR
-    P -.-> CR
-    C -.-> CR
-    D -.-> CR
-    KW["Typed text matches crisis keyword<br/>(supplement only)"] -.-> CR
-    S2 -.->|reframe text| KW
-    CR -.->|Back to where I was| S2
+    E["Entry: How are you right now?"]
+    E --> P["Skill picker (usual labelled)"]
+    E --> U["Use my usual"]
+    P --> X["Exercise: one step per screen (fixed text from app)"]
+    U --> X
+    X --> M{"Model acknowledgment (5 s timeout)"}
+    M --> MT["Model text"]
+    M --> FB["Fixed fallback text"]
+    MT --> C["Check-in: Helped / Didn't help / Skip"]
+    FB --> C
+    C --> D["Done (Back to start / Close)"]
 ```
+
+**Stop exercise and Crisis support are available on every screen. Stop exercise saves the session as exited early and goes to Done. Crisis support opens a static panel (no backend or model) and returns to the same step.**
 
 Notes:
 
