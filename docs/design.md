@@ -27,11 +27,12 @@ flowchart TD
     E -->|taps usual| U["Use my usual<br/>shown only if history exists<br/>starts the named skill"]
     P -->|user chooses a skill| X["Exercise<br/>one step per screen, fixed app text<br/>≤ 90 s · screen shows only step + Stop + Crisis"]
     U -->|starts directly| X
-    X -->|after final step| M{"Model acknowledgment<br/>one short line · 5 s timeout"}
+    X -->|"after final step (breathing, reframe)"| M{"Model acknowledgment<br/>one short line · 5 s timeout"}
     M -->|ok| MT["Model text<br/>shown if it passes output check<br/>(≤ 30 words, no advice/questions)"]
     M -->|fails| FB["Fixed fallback text<br/>on error, timeout, or rejected output<br/>exercise continues normally"]
     MT --> C["Check-in<br/>Helped / Didn't help / Skip<br/>one tap · updates 'usual' skill"]
     FB --> C
+    X -->|STOP: no model call| C
     C --> D["Done<br/>Back to start / Close<br/>session saved to SQLite"]
 ```
 
