@@ -1,7 +1,7 @@
 # Assignment 3.1 — Research and Design: Submission
 
-- **Repository:** `<REPO URL>`
-- **Commit:** `<COMMIT HASH>`
+- **Repository:** `https://github.com/afukuda69/mental-health-skills-app`
+- **Commit:** `cb5f0ed6f70260629d94202a7db6225ea78456a0`
 
 > Coursework prototype. It is not therapy or diagnosis, and not for use in a real crisis.
 
