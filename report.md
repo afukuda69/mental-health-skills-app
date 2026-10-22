@@ -3,7 +3,6 @@
 - **Repository:** `https://github.com/afukuda69/mental-health-skills-app`
 - **Commit:** `fb6b2848b8c53bbd2e4d5813dc12ee1c598c02c7`
 
-> Coursework prototype. It is not therapy or diagnosis, and not for use in a real crisis.
 
 ## Documents
 
