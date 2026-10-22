@@ -12,7 +12,7 @@ The app guides one short skill at a time on localhost (Vue + FastAPI + SQLite).
 | STOP | Part 3.3 | None planned (fixed text) |
 | One-minute cognitive reframe | Part 3.3 | Short reflection of the user's alternative thought |
 
-5-4-3-2-1 grounding is out of scope (see section j).
+5-4-3-2-1 grounding is out of scope because it asks for 15 items of input (D3).
 
 The **app** controls each skill's sequence, timers, exits, saved state, and crisis access. The **model** only writes short, neutral acknowledgments.
 
@@ -49,35 +49,26 @@ Notes:
 
 ## c. Screens
 
-**Shared frame inside an exercise (D1, D4).** Each exercise screen shows only:
-
-- the step
-- **Stop exercise** (top left)
-- **Crisis support** (fixed, top right)
-
-There is no navigation, history link, or progress bar of steps. This contraction is a **fixed design choice** that applies to everyone. It is not triggered by anything the app infers.
+**Shared exercise frame (D1, D4).** Each exercise screen shows only the step, **Stop exercise** (top left), and **Crisis support** (fixed, top right). There is no navigation, history link, or progress bar of steps. This contraction is fixed for everyone and is not triggered by anything the app infers.
 
 ### Entry (all skills)
 
 - Prompt: "How are you right now?"
 - Options: **"Tense or wound up"** · **"Overwhelmed"** · **"Okay, just want a minute"**
-- If history exists, a "**Use my usual: Paced breathing**" button. It names the skill, so the user knows what will start.
-- Footer: "Coursework prototype. Not a support service."
-- No login and no settings.
+- If history exists: "**Use my usual: Paced breathing**" (names the skill that will start).
+- Footer: "Coursework prototype. Not a support service." No login and no settings.
 
 ### Paced breathing (Part 3.2)
 
-| # | Screen | Text / behavior |
+| # | Screen | Text |
 |---|---|---|
-| 1 | Intro (~5 s) | "Breathe in as the circle grows, out as it shrinks. Seven slow breaths." The first cycle starts automatically after 5 s, or earlier if the user taps "Start". |
-| 2 | Breathing (70 s) | A muted circle grows for 4 s with the label "In", then shrinks for 6 s with the label "Out". Seven cycles. Easing is slow, and nothing flashes. A low-contrast "3 of 7" sits under the circle (see section k). |
-| 3 | Closing | Model acknowledgment, or the fallback: "That was seven slow breaths." Then a "Continue" button. The request is sent at the start of cycle 7, so it usually arrives before the user reaches this screen. |
-
-This is one action per screen. The breathing screen is a single action: follow the circle.
+| 1 | Intro | "Breathe in as the circle grows, out as it shrinks. Seven slow breaths." Starts after 5 s, or on "Start". |
+| 2 | Breathing | Muted circle labelled "In" (grows) and "Out" (shrinks). Low-contrast "3 of 7" counter. Slow easing, nothing flashes. |
+| 3 | Closing | Model acknowledgment, or fallback: "That was seven slow breaths." Button: "Continue". |
 
 ### STOP (Part 3.3)
 
-Each screen advances when the user taps "Next". There is no auto-advance.
+Each screen advances on "Next". There is no auto-advance.
 
 | # | Text |
 |---|---|
@@ -86,20 +77,16 @@ Each screen advances when the user taps "Next". There is no auto-advance.
 | 3 | "**Observe.** Notice what is happening inside you and around you. No need to write anything." |
 | 4 | "**Proceed mindfully.** Choose what you'll do next." |
 
-There is no model call. The final step is the end of the exercise.
-
 ### One-minute cognitive reframe (Part 3.3)
 
-Each step has a short text field and optional quick-select chips. The user can tap "Next" with the field empty.
+Each step has a short text field and optional chips. "Next" works with the field empty.
 
 | # | Prompt | Chips |
 |---|---|---|
 | 1 | "What's the thought?" | "Something will go wrong" · "I messed up" · "I'd rather not say" |
 | 2 | "What supports that thought?" | "Something that happened" · "A feeling more than a fact" · "Not sure" |
 | 3 | "Is there another way to see it?" | "It may not be as certain as it feels" · "I've got through hard moments before" · "Not sure yet" |
-| 4 | Reflection | The model briefly reflects the step-3 answer back, e.g. "Another way to see it: it may not be as certain as it feels." Fallback: "You've noted another way to look at it." |
-
-Before any text is sent, the keyword check (section f) runs on it in the frontend.
+| 4 | Reflection | Model example: "Another way to see it: it may not be as certain as it feels." Fallback: "You've noted another way to look at it." |
 
 ### Check-in, Done, History
 
@@ -230,11 +217,7 @@ The app uses the usual skill in two places: the "Use my usual" button on entry, 
 |---|---|
 | Automatic skill routing from the entry answer or history | **R4**: participants wanted to be offered options, not routed. It would also rely on inference the app can't justify (D1). |
 | Chat-first interface (user talks, model guides) | **D2**: no clear single action per screen. **D3**: demands typing and disclosure. It would also hand the step sequence to the model. |
-| Skill library / dashboard home | **D2**: participants explicitly did not want a library, menu, or dashboard. |
-| Preferences setup screen (favourite skill, tone, etc.) | **D5**: configuration burden. History gives the same benefit for free. |
-| Confirmation dialog on Stop ("Are you sure?") | **R3**: leaving must cost nothing. |
 | Sentiment/distress classifier to trigger crisis or contraction | **D1**: no reliable detection is established. It would also add a model dependency to safety (R2). |
-| 5-4-3-2-1 grounding as a fourth skill | **D3**: as specified it asks for 15 items of input. Deferred, not ruled out. |
 
 ## k. Open questions
 
