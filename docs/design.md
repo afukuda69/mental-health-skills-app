@@ -39,7 +39,7 @@ flowchart TD
 
 Notes:
 
-- The Crisis support button opens the panel from **every** screen. Dashed edges show a few of these. "Back" returns to the same step. The exercise is paused, not ended.
+- The Crisis support button opens the panel from **every** screen. "Back" returns to the same step. The exercise is paused, not ended.
 - Stop exercise is available on every exercise step. The session is saved as `exited_early` and the user goes to Done, with no check-in. If saving fails, the user still moves on.
 - History is reachable from a small link on the entry screen only. It is not shown inside exercises.
 
