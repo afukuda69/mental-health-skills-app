@@ -34,6 +34,9 @@ flowchart TD
     FB --> C
     X -->|STOP: no model call| C
     C --> D["Done<br/>Back to start / Close<br/>session saved to SQLite"]
+
+    AO["Always on screen<br/>Crisis support: static panel, no backend or model,<br/>returns to same step<br/>Stop exercise: saves as exited early → Done"]
+    style AO fill:#fde2e4,stroke:#b4232c,stroke-width:2px,color:#3b0a0f
 ```
 
 **Stop exercise and Crisis support are available on every screen. Stop exercise saves the session as exited early and goes to Done. Crisis support opens a static panel (no backend or model) and returns to the same step.**
