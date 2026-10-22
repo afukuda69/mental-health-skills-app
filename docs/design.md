@@ -22,17 +22,17 @@ The app **cannot detect distress**. It knows only what the user taps or types, a
 
 ```mermaid
 flowchart TD
-    E["Entry: How are you right now?"]
-    E --> P["Skill picker (usual labelled)"]
-    E --> U["Use my usual"]
-    P --> X["Exercise: one step per screen (fixed text from app)"]
-    U --> X
-    X --> M{"Model acknowledgment (5 s timeout)"}
-    M --> MT["Model text"]
-    M --> FB["Fixed fallback text"]
-    MT --> C["Check-in: Helped / Didn't help / Skip"]
+    E["Entry<br/>'How are you right now?'<br/>3 tap options · no login or settings"]
+    E -->|picks how they feel| P["Skill picker<br/>breathing · STOP · reframe<br/>usual skill labelled, not preselected"]
+    E -->|taps usual| U["Use my usual<br/>shown only if history exists<br/>starts the named skill"]
+    P -->|user chooses a skill| X["Exercise<br/>one step per screen, fixed app text<br/>≤ 90 s · screen shows only step + Stop + Crisis"]
+    U -->|starts directly| X
+    X -->|after final step| M{"Model acknowledgment<br/>one short line · 5 s timeout"}
+    M -->|ok| MT["Model text<br/>shown if it passes output check<br/>(≤ 30 words, no advice/questions)"]
+    M -->|fails| FB["Fixed fallback text<br/>on error, timeout, or rejected output<br/>exercise continues normally"]
+    MT --> C["Check-in<br/>Helped / Didn't help / Skip<br/>one tap · updates 'usual' skill"]
     FB --> C
-    C --> D["Done (Back to start / Close)"]
+    C --> D["Done<br/>Back to start / Close<br/>session saved to SQLite"]
 ```
 
 **Stop exercise and Crisis support are available on every screen. Stop exercise saves the session as exited early and goes to Done. Crisis support opens a static panel (no backend or model) and returns to the same step.**
