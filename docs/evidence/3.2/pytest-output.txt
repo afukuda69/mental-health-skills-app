@@ -1,0 +1,76 @@
+# backend pytest, 2026-10-27 11:43 EDT, macOS, LLM_MODE forced to mock, network blocked by conftest
+$ cd backend && .venv/bin/python -m pytest -v
+============================= test session starts ==============================
+platform darwin -- Python 3.14.7, pytest-9.1.1, pluggy-1.7.0 -- /Users/owner/mental-health-skills-app/backend/.venv/bin/python
+rootdir: /Users/owner/mental-health-skills-app/backend
+plugins: anyio-4.15.1
+collecting ... collected 60 items
+
+tests/test_crisis.py::test_matches[Fictional: I want to die] PASSED      [  1%]
+tests/test_crisis.py::test_matches[fictional: I WANT TO   DIE] PASSED    [  3%]
+tests/test_crisis.py::test_matches[fictional: thinking about suicide] PASSED [  5%]
+tests/test_crisis.py::test_matches[fictional: I might hurt myself] PASSED [  6%]
+tests/test_crisis.py::test_matches[fictional: I\u2019m going to end it all] PASSED [  8%]
+tests/test_crisis.py::test_no_match[] PASSED                             [ 10%]
+tests/test_crisis.py::test_no_match[None] PASSED                         [ 11%]
+tests/test_crisis.py::test_no_match[I want to diet] PASSED               [ 13%]
+tests/test_crisis.py::test_no_match[The meeting went fine] PASSED        [ 15%]
+tests/test_crisis.py::test_known_limits_are_real PASSED                  [ 16%]
+tests/test_crisis.py::test_list_is_loaded_from_shared_file PASSED        [ 18%]
+tests/test_model_client.py::test_mock_returns_fixture_text PASSED        [ 20%]
+tests/test_model_client.py::test_mock_error_falls_back PASSED            [ 21%]
+tests/test_model_client.py::test_mock_timeout_falls_back PASSED          [ 23%]
+tests/test_model_client.py::test_mock_malformed_rejected_by_output_check PASSED [ 25%]
+tests/test_model_client.py::test_reframe_fallback_text PASSED            [ 26%]
+tests/test_model_client.py::test_check_output_rejects[] PASSED           [ 28%]
+tests/test_model_client.py::test_check_output_rejects[   ] PASSED        [ 30%]
+tests/test_model_client.py::test_check_output_rejects[word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word] PASSED [ 31%]
+tests/test_model_client.py::test_check_output_rejects[Did that help you breathe more slowly today?] PASSED [ 33%]
+tests/test_model_client.py::test_check_output_rejects[You took seven slow breaths!] PASSED [ 35%]
+tests/test_model_client.py::test_check_output_rejects[This can help with your anxiety disorder.] PASSED [ 36%]
+tests/test_model_client.py::test_check_output_rejects[You should do this every morning.] PASSED [ 38%]
+tests/test_model_client.py::test_check_output_rejects[Great job on finishing all seven breaths.] PASSED [ 40%]
+tests/test_model_client.py::test_check_output_rejects[I remember you came in tense last time.] PASSED [ 41%]
+tests/test_model_client.py::test_check_output_accepts[You came in feeling tense and took seven slow breaths.] PASSED [ 43%]
+tests/test_model_client.py::test_check_output_accepts[Another way to see it: it may not be as certain as it feels.] PASSED [ 45%]
+tests/test_model_client.py::test_check_output_accepts[word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word] PASSED [ 46%]
+tests/test_model_client.py::test_live_success_records_latency PASSED     [ 48%]
+tests/test_model_client.py::test_live_exception_falls_back PASSED        [ 50%]
+tests/test_model_client.py::test_live_without_key_falls_back PASSED      [ 51%]
+tests/test_model_client.py::test_max_calls_cap_switches_to_mock PASSED   [ 53%]
+tests/test_model_client.py::test_prompt_context_contains_only_the_planned_fields PASSED [ 55%]
+tests/test_model_client.py::test_fallbacks_match_frontend_skills_js PASSED [ 56%]
+tests/test_routes.py::test_health PASSED                                 [ 58%]
+tests/test_routes.py::test_end_accepts_beacon_text_plain_body PASSED     [ 60%]
+tests/test_routes.py::test_end_rejects_bad_reason_and_unknown_session PASSED [ 61%]
+tests/test_routes.py::test_acknowledgment_saves_message PASSED           [ 63%]
+tests/test_routes.py::test_acknowledgment_failure_saves_fallback_row PASSED [ 65%]
+tests/test_routes.py::test_acknowledgment_context_counts_prior_completed PASSED [ 66%]
+tests/test_routes.py::test_no_model_call_after_stop PASSED               [ 68%]
+tests/test_routes.py::test_conversation_messages_persist PASSED          [ 70%]
+tests/test_routes.py::test_crisis_phrase_scripted_reply_without_model_call PASSED [ 71%]
+tests/test_routes.py::test_history_and_usual PASSED                      [ 73%]
+tests/test_routes.py::test_feedback_validation PASSED                    [ 75%]
+tests/test_sessions.py::test_create_and_complete_persists_timing PASSED  [ 76%]
+tests/test_sessions.py::test_early_end_reasons[stopped] PASSED           [ 78%]
+tests/test_sessions.py::test_early_end_reasons[left] PASSED              [ 80%]
+tests/test_sessions.py::test_left_never_overwrites_a_final_reason[completed] PASSED [ 81%]
+tests/test_sessions.py::test_left_never_overwrites_a_final_reason[stopped] PASSED [ 83%]
+tests/test_sessions.py::test_completed_overwrites_left_after_returning_to_tab PASSED [ 85%]
+tests/test_sessions.py::test_create_is_idempotent_on_client_id PASSED    [ 86%]
+tests/test_sessions.py::test_unknown_end_reason_rejected PASSED          [ 88%]
+tests/test_sessions.py::test_end_unknown_session_returns_none PASSED     [ 90%]
+tests/test_sessions.py::test_feedback_one_per_session PASSED             [ 91%]
+tests/test_sessions.py::test_history_excludes_typed_user_text PASSED     [ 93%]
+tests/test_sessions.py::test_usual_none_without_history PASSED           [ 95%]
+tests/test_sessions.py::test_usual_prefers_most_recent_helped PASSED     [ 96%]
+tests/test_sessions.py::test_usual_falls_back_to_most_completed_ties_to_recent PASSED [ 98%]
+tests/test_sessions.py::test_stopped_sessions_do_not_count_toward_usual PASSED [100%]
+
+=============================== warnings summary ===============================
+tests/test_routes.py::test_health
+  /Users/owner/mental-health-skills-app/backend/.venv/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 60 passed, 1 warning in 0.57s =========================
