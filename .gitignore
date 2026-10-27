@@ -1,2 +1,19 @@
 assignment-3-overview.md
 .DS_Store
+
+# Python
+backend/.venv/
+__pycache__/
+.pytest_cache/
+
+# SQLite database (created on first run)
+backend/*.db
+*.db-journal
+
+# Secrets
+.env
+backend/.env
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
