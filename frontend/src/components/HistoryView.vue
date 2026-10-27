@@ -22,7 +22,7 @@ const ENDED = {
 }
 
 const fmt = (iso) => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
-const seconds = (ms) => (ms == null ? '—' : `${(ms / 1000).toFixed(1)} seconds`)
+const seconds = (ms) => (ms == null ? '—' : `${(ms / 1000).toFixed(1)} s`)
 // The planned time comes from the schedule in content/skills.js, as in the session record.
 const planned = (s) => (SKILLS[s.skill]?.cycles ? plannedMs(SKILLS[s.skill]) : null)
 
@@ -42,71 +42,77 @@ onMounted(async () => {
     <p v-if="state === 'loading'" class="muted">Loading</p>
     <p v-else-if="state === 'error'" class="muted">History can't be loaded right now.</p>
     <p v-else-if="sessions.length === 0" class="muted">No sessions yet.</p>
-    <template v-else>
-      <article v-for="s in sessions" :key="s.id" class="card entry">
-        <div class="head">
-          <div>
-            <h2>{{ SKILLS[s.skill]?.label ?? s.skill }}</h2>
-            <p class="muted when">{{ fmt(s.started_at) }}</p>
-          </div>
-          <span class="chip status" :class="s.end_reason">{{ STATUS[s.end_reason] ?? 'Not finished' }}</span>
+    <ul v-else class="list">
+      <li v-for="s in sessions" :key="s.id" class="row">
+        <div class="line">
+          <span class="dot" :class="s.end_reason ?? 'none'" aria-hidden="true"></span>
+          <strong class="status">{{ STATUS[s.end_reason] ?? 'Not finished' }}</strong>
+          <span class="skill">{{ SKILLS[s.skill]?.label ?? s.skill }}</span>
+          <span class="muted when">{{ fmt(s.started_at) }}</span>
         </div>
-        <dl class="facts">
-          <div><dt>Active time</dt><dd>{{ seconds(s.measured_ms) }}</dd></div>
-          <div><dt>Planned time</dt><dd>{{ seconds(planned(s)) }}</dd></div>
-          <div class="wide"><dt>How it ended</dt><dd>{{ ENDED[s.end_reason] ?? 'No end was recorded' }}</dd></div>
-        </dl>
+        <p class="muted detail">
+          Active {{ seconds(s.measured_ms) }} of {{ seconds(planned(s)) }} planned · {{ ENDED[s.end_reason] ?? 'No end was recorded' }}
+        </p>
         <button v-if="s.messages.length" type="button" class="link" @click="open[s.id] = !open[s.id]">
           {{ open[s.id] ? 'Hide message' : 'Show message' }}
         </button>
         <p v-for="(m, i) in open[s.id] ? s.messages : []" :key="i" class="muted message">{{ m.text }}</p>
-      </article>
-    </template>
-    <button type="button" class="link" @click="$emit('navigate', 'home')">Back to start</button>
+      </li>
+    </ul>
+    <button type="button" class="link back" @click="$emit('navigate', 'home')">Back to start</button>
   </main>
 </template>
 
 <style scoped>
-.entry {
-  margin-bottom: 12px;
-}
-.head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-}
-.head h2 {
-  font-size: 1.15rem;
+.list {
+  list-style: none;
   margin: 0;
+  padding: 0;
+}
+.row {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.row:last-child {
+  border-bottom: 0;
+}
+.line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--status-left);
+}
+.dot.completed {
+  background: var(--status-completed);
+}
+.dot.stopped {
+  background: var(--status-stopped);
+}
+.dot.none {
+  background: none;
+  border: 2px solid var(--status-left);
 }
 .when {
-  margin: 2px 0 0;
+  margin-left: auto;
+  font-size: 0.85rem;
+}
+.detail {
+  margin: 4px 0 0 18px;
   font-size: 0.9rem;
 }
-.status.completed {
-  background: var(--sage);
-  border-color: var(--sage-strong);
-  color: var(--accent);
-}
-.facts {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin: 14px 0 6px;
-}
-.facts .wide {
-  grid-column: 1 / -1;
-}
-dt {
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-dd {
-  margin: 0;
-  font-weight: 600;
-}
 .message {
-  margin: 6px 0 0;
+  margin: 6px 0 0 18px;
+}
+.row .link {
+  margin-left: 14px;
+}
+.back {
+  margin-top: 16px;
 }
 </style>

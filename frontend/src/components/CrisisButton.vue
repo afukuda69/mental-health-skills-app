@@ -15,21 +15,26 @@ defineEmits(['open'])
 </template>
 
 <style scoped>
+/* Warm muted coral, distinct from the blue UI. */
 .crisis-button {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 8px 4px;
+  justify-content: center;
+  gap: 1px;
+  padding: 4px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 999px;
   background: none;
   color: var(--crisis-text);
   font-size: 0.75rem;
   font-weight: 700;
 }
-.crisis-button:hover {
+.crisis-button svg {
+  box-sizing: content-box;
+  padding: 4px 15px;
+  border-radius: 999px;
   background: var(--crisis-bg);
 }
 </style>

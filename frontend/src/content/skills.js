@@ -3,7 +3,6 @@
 // Fallback strings must match backend/model_client.py FALLBACKS.
 
 export const APP_NAME = 'Short skills'
-export const HOME_HEADLINE = 'One short skill at a time.'
 
 export const ENTRY_PROMPT = 'How are you right now?'
 

@@ -1,13 +1,13 @@
 // Re-run of the 3.2 browser checks after the visual restyle (headless Chromium
 // via Playwright). Not part of the app or the test suite. Fictional data only.
 // Expects my own servers on free ports, scratch DB, LLM_MODE=mock:
-//   backend :8041, frontend :5201 (API_PORT=8041), frontend :5202 (API_PORT=8099, nothing listening = backend down)
+//   backend :8051, frontend :5211 (API_PORT=8051), frontend :5212 (API_PORT=8098, nothing listening = backend down)
 // Run from a folder with playwright installed:  node restyle-run.mjs <outdir>
 import { chromium } from 'playwright'
 
 const OUT = process.argv[2] || '.'
-const UP = 'http://localhost:5201'
-const DOWN = 'http://localhost:5202'
+const UP = 'http://localhost:5211'
+const DOWN = 'http://localhost:5212'
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 const results = {}
 
@@ -54,13 +54,13 @@ async function pauseAndCrisisRun(browser) {
   await sleep(3000)
   await tap(p, 'Resume')
   await sleep(4000)
-  const before = await p.locator('.state .muted').first().innerText()
+  const before = await p.locator('.caption').innerText()
   await tap(p, 'Crisis')
   await p.getByText('988 Suicide & Crisis Lifeline').waitFor()
   await p.screenshot({ path: `${OUT}/06-crisis-during-breathing.png` })
   await sleep(5000)
   await tap(p, 'Back to where I was')
-  results.cycle_before_after_crisis = [before, await p.locator('.state .muted').first().innerText()]
+  results.cycle_before_after_crisis = [before, await p.locator('.caption').innerText()]
   await p.getByRole('button', { name: 'Continue' }).waitFor({ timeout: 110000 })
   await p.close()
 }
@@ -95,7 +95,7 @@ async function historyAndUsual(browser) {
   results.usual_button = await p.getByRole('button', { name: /Use my usual/ }).innerText()
   await p.screenshot({ path: `${OUT}/10-home-usual.png` })
   await tap(p, 'History')
-  await p.locator('.history .entry').first().waitFor()
+  await p.locator('.history .row').first().waitFor()
   results.history_chips = await p.locator('.status').allInnerTexts()
   await p.screenshot({ path: `${OUT}/11-history.png`, fullPage: true })
   await p.close()

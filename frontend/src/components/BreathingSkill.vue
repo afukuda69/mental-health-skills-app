@@ -115,30 +115,40 @@ const circleStyle = computed(() =>
       </div>
     </div>
 
-    <section v-if="pos.stage === 'intro'" class="state">
-      <p class="instruction">{{ skill.intro }}</p>
-      <div class="tiles">
-        <div class="card tile"><span class="muted small">{{ skill.inLabel }}</span><strong>4</strong><span class="muted small">seconds</span></div>
-        <div class="card tile"><span class="muted small">{{ skill.outLabel }}</span><strong>6</strong><span class="muted small">seconds</span></div>
-      </div>
-      <button type="button" class="primary" @click="startNow">{{ BUTTONS.start }}</button>
-      <button type="button" class="danger-soft" @click="stop">{{ BUTTONS.stopExercise }}</button>
+    <!-- Cycle dots are decorative; the caption carries the same information for screen readers. -->
+    <ol class="dots" aria-hidden="true">
+      <li
+        v-for="i in skill.cycles"
+        :key="i"
+        :class="{ done: i <= pos.cyclesDone, current: pos.stage === 'breathing' && i === pos.cycle }"
+      ></li>
+    </ol>
+
+    <section class="state" aria-live="polite">
+      <template v-if="pos.stage === 'intro'">
+        <p class="instruction">{{ skill.intro }}</p>
+        <div class="tiles">
+          <div class="card tile"><span class="muted small">{{ skill.inLabel }}</span><strong>4</strong><span class="muted small">seconds</span></div>
+          <div class="card tile"><span class="muted small">{{ skill.outLabel }}</span><strong>6</strong><span class="muted small">seconds</span></div>
+        </div>
+      </template>
+      <template v-else-if="pos.stage === 'breathing'">
+        <h2>{{ phaseLabel }}</h2>
+        <p class="caption">Cycle {{ pos.cycle }} of {{ skill.cycles }}</p>
+      </template>
+      <p v-else-if="closingText" class="instruction">{{ closingText }}</p>
     </section>
 
-    <section v-else-if="pos.stage === 'breathing'" class="state" aria-live="polite">
-      <h2>{{ phaseLabel }}</h2>
-      <p class="muted">Cycle {{ pos.cycle }} of {{ skill.cycles }}</p>
-      <button type="button" class="danger-soft" @click="stop">{{ BUTTONS.stopExercise }}</button>
-      <button type="button" @click="togglePause">{{ paused ? BUTTONS.resume : BUTTONS.pause }}</button>
-    </section>
-
-    <section v-else class="state" aria-live="polite">
-      <p v-if="closingText" class="instruction">{{ closingText }}</p>
-      <button v-if="closingText" type="button" class="primary" @click="emit('finished', session.clientId)">
+    <div class="controls">
+      <button v-if="pos.stage === 'intro'" type="button" class="primary" @click="startNow">{{ BUTTONS.start }}</button>
+      <button v-else-if="pos.stage === 'breathing'" type="button" @click="togglePause">
+        {{ paused ? BUTTONS.resume : BUTTONS.pause }}
+      </button>
+      <button v-else-if="closingText" type="button" class="primary" @click="emit('finished', session.clientId)">
         {{ BUTTONS.continue }}
       </button>
       <button type="button" class="danger-soft" @click="stop">{{ BUTTONS.stopExercise }}</button>
-    </section>
+    </div>
 
     <label class="card toggle">
       <span>Animate circle</span>
@@ -155,13 +165,13 @@ const circleStyle = computed(() =>
 .circle-area {
   display: flex;
   justify-content: center;
-  margin: 4px 0 18px;
+  margin: 4px 0 14px;
 }
 .ring {
   width: 240px;
   height: 240px;
   border-radius: 50%;
-  border: 1px solid var(--sage-strong);
+  background: var(--tint);
   display: grid;
   place-items: center;
 }
@@ -169,7 +179,7 @@ const circleStyle = computed(() =>
   width: 200px;
   height: 200px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, var(--circle-out), var(--circle) 70%);
+  background: radial-gradient(circle at 35% 30%, var(--circle-out), var(--circle) 75%);
   border: 2px solid var(--circle-edge);
   will-change: transform;
 }
@@ -177,17 +187,40 @@ const circleStyle = computed(() =>
 .circle.still.out {
   background: var(--circle-out);
 }
-.state {
+.dots {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  justify-content: center;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+}
+.dots li {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--secondary);
+}
+.dots li.done {
+  background: var(--circle-edge);
+}
+.dots li.current {
+  background: var(--accent);
+}
+.state {
+  min-height: 96px;
   text-align: center;
 }
 .state h2 {
   margin: 0;
 }
+.caption {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
 .instruction {
-  margin: 0 0 6px;
+  margin: 0 0 12px;
   font-size: 1.15rem;
 }
 .tiles {
@@ -208,6 +241,15 @@ const circleStyle = computed(() =>
 .small {
   font-size: 0.85rem;
   margin: 0;
+}
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.controls button {
+  flex: 1;
+  width: auto;
 }
 .toggle {
   display: flex;
