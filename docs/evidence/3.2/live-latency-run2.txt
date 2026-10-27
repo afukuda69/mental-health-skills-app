@@ -1,0 +1,18 @@
+# Live latency run 2 (after truncation fix 774896b), 2026-10-27, macOS
+
+$ cd backend && .venv/bin/python scripts/live_latency.py 5
+
+model: nvidia/nemotron-3-ultra-550b-a55b:free
+calls: 5 (raw provider latency, 30 s limit; app limit is 5 s)
+
+| # | entry | latency_ms | passes check | app would show | reply |
+|---|---|---|---|---|---|
+| 1 | tense | 3342 | True | model text | You completed seven paced breaths after starting out feeling tense. This was your first breathing session. |
+| 2 | overwhelmed | 3259 | True | model text | You completed seven paced breaths after starting out overwhelmed; this is your second breathing session. |
+| 3 | okay | 18264 | True | fallback (timeout) | You completed seven paced breaths, starting from okay and wanting a minute; this is your fourth breathing session. |
+| 4 | None | 1928 | True | model text | You completed seven slow breaths in this paced breathing session. |
+| 5 | tense | 7681 | True | fallback (timeout) | You completed seven paced breaths after starting out feeling tense. |
+
+latency ms: min 1928, median 3342, max 18264
+under 5000 ms: 3/5
+model text shown under the app's rules: 3/5
