@@ -6,7 +6,9 @@ and closes its own connection, following travel-application/backend/controller.p
 
 from datetime import datetime, timezone
 
+import crisis
 import db
+import model_client
 
 END_REASONS = {"completed", "stopped", "left"}
 RATINGS = {"helped", "didnt_help"}
@@ -198,3 +200,47 @@ def get_usual_skill() -> str | None:
         return most["skill"] if most else None
     finally:
         conn.close()
+
+
+class SessionNotFound(Exception):
+    pass
+
+
+class SessionStopped(Exception):
+    """No model call is made after Stop exercise (design.md section e)."""
+
+
+def _require_open_session(client_id: str) -> dict:
+    session = get_session(client_id)
+    if session is None:
+        raise SessionNotFound(client_id)
+    if session["end_reason"] == "stopped":
+        raise SessionStopped(client_id)
+    return session
+
+
+def acknowledge_session(client_id: str) -> dict:
+    """Closing acknowledgment for a finished exercise, saved as a message."""
+    session = _require_open_session(client_id)
+    context = {
+        "entry_choice": session["entry_choice"],
+        "prior_completed": count_prior_completed(session["skill"], session["id"]),
+    }
+    result = model_client.acknowledge(session["skill"], context)
+    add_message(session["id"], result.role, result.text, result.status, result.latency_ms)
+    return {"text": result.text, "status": result.status, "latency_ms": result.latency_ms, "crisis": False}
+
+
+def submit_text(client_id: str, text: str) -> dict:
+    """Typed text (the reframe in Part 3.3). The crisis check runs first; on
+    a match there is no model call, the typed text is not stored, and a
+    scripted reply is saved with crisis_flag = 1."""
+    session = _require_open_session(client_id)
+    if crisis.matches_crisis_phrase(text):
+        add_message(session["id"], "user", None, None, None, crisis_flag=True)
+        add_message(session["id"], "scripted", crisis.SCRIPTED_REPLY, "scripted", None, crisis_flag=True)
+        return {"text": crisis.SCRIPTED_REPLY, "status": "scripted", "latency_ms": None, "crisis": True}
+    add_message(session["id"], "user", text)
+    result = model_client.acknowledge("reframe", {"text": text})
+    add_message(session["id"], result.role, result.text, result.status, result.latency_ms)
+    return {"text": result.text, "status": result.status, "latency_ms": result.latency_ms, "crisis": False}

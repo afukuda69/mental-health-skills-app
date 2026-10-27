@@ -1,0 +1,10 @@
+{
+  "_note": "Supplementary crisis keyword list. Read by backend/crisis.py and frontend/src/content/crisisKeywords.js. This is not a safety mechanism: the always-visible Crisis support button is. See docs/design.md section f for limits.",
+  "phrases": [
+    "kill myself",
+    "suicide",
+    "end it all",
+    "hurt myself",
+    "want to die"
+  ]
+}

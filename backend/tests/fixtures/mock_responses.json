@@ -1,0 +1,16 @@
+{
+  "_note": "Saved mock model replies. Fictional. 'ok' replies must pass model_client.check_output; 'malformed' replies must fail it.",
+  "breathing": {
+    "ok": {
+      "tense": "You came in feeling tense and took seven slow breaths.",
+      "overwhelmed": "You came in feeling overwhelmed and took seven slow breaths.",
+      "okay": "You took a minute for seven slow breaths.",
+      "default": "You took seven slow breaths."
+    },
+    "malformed": "Amazing job!!! You should keep doing this every single day because it treats your anxiety disorder and you will feel so much better very soon, I promise, okay?"
+  },
+  "reframe": {
+    "ok": "Another way to see it: it may not be as certain as it feels.",
+    "malformed": "Great work! Have you considered talking to a therapist about this?"
+  }
+}

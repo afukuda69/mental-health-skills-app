@@ -1,6 +1,7 @@
 """FastAPI routes only. Logic lives in sessions.py and model_client.py."""
 
 import json
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
@@ -9,6 +10,8 @@ from pydantic import BaseModel, Field
 
 import db
 import sessions
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
 
 @asynccontextmanager
@@ -51,6 +54,10 @@ class FeedbackIn(BaseModel):
     rating: str
 
 
+class TextIn(BaseModel):
+    text: str = Field(min_length=1, max_length=500)
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
@@ -76,6 +83,26 @@ async def end_session(client_id: str, request: Request):
     if row is None:
         raise HTTPException(status_code=404, detail="Unknown session")
     return row
+
+
+@app.post("/api/sessions/{client_id}/acknowledgment")
+def acknowledgment(client_id: str):
+    try:
+        return sessions.acknowledge_session(client_id)
+    except sessions.SessionNotFound:
+        raise HTTPException(status_code=404, detail="Unknown session")
+    except sessions.SessionStopped:
+        raise HTTPException(status_code=409, detail="Session was stopped")
+
+
+@app.post("/api/sessions/{client_id}/messages")
+def message(client_id: str, payload: TextIn):
+    try:
+        return sessions.submit_text(client_id, payload.text)
+    except sessions.SessionNotFound:
+        raise HTTPException(status_code=404, detail="Unknown session")
+    except sessions.SessionStopped:
+        raise HTTPException(status_code=409, detail="Session was stopped")
 
 
 @app.post("/api/sessions/{client_id}/feedback")
