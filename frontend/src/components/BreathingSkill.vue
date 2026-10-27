@@ -160,6 +160,8 @@ const circleStyle = computed(() =>
   height: 240px;
   border-radius: 50%;
   background: var(--circle);
+  /* Edge keeps the circle distinct from the gradient (>= 3:1), not only by hue. */
+  border: 2px solid var(--circle-edge);
   display: flex;
   flex-direction: column;
   align-items: center;

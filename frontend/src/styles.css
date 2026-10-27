@@ -1,14 +1,18 @@
-/* Low-stimulus palette (design.md D6): muted, low saturation, no bright accents. */
+/* Low-stimulus palette (design.md D6): muted, low saturation, no bright accents.
+   Text tokens meet WCAG AA (4.5:1) on both gradient stops; tests/contrast.test.js checks this. */
 :root {
-  --bg: #f3f2ee;
+  --bg-top: #f3f6fb;
+  --bg-bottom: #f1eef8;
+  --bg: var(--bg-bottom);
   --surface: #fbfaf7;
   --text: #33373a;
   --muted: #62686d;
-  --faint: #8a9095;
+  --faint: #686c70;
   --line: #dddbd4;
-  --accent: #7f9a94;
+  --accent: #647974;
   --circle: rgba(127, 154, 148, 0.32);
   --circle-out: rgba(127, 154, 148, 0.16);
+  --circle-edge: #748d87;
   --button: #e7e5de;
   --button-hover: #dedbd2;
   --focus: #6b8580;
@@ -29,6 +33,17 @@ body {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: 17px;
   line-height: 1.5;
+}
+
+/* Static pale blue -> lavender gradient on a fixed layer behind every screen.
+   No animation or transition: motion read as demand (D6). A fixed pseudo-element
+   is used because iOS Safari ignores background-attachment: fixed. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
 }
 
 .screen {
