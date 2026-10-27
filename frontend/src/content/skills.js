@@ -2,6 +2,9 @@
 // The model never writes or changes anything in this file.
 // Fallback strings must match backend/model_client.py FALLBACKS.
 
+export const APP_NAME = 'Short skills'
+export const HOME_HEADLINE = 'One short skill at a time.'
+
 export const ENTRY_PROMPT = 'How are you right now?'
 
 export const ENTRY_OPTIONS = [
@@ -14,6 +17,7 @@ export const SKILLS = {
   breathing: {
     id: 'breathing',
     label: 'Paced breathing',
+    purpose: 'Breathe in for 4 seconds and out for 6, seven times, following a circle.',
     available: true,
     component: 'BreathingSkill',
     intro: 'Breathe in as the circle grows, out as it shrinks. Seven slow breaths.',
@@ -21,8 +25,8 @@ export const SKILLS = {
     cycles: 7,
     inMs: 4000,
     outMs: 6000,
-    inLabel: 'In',
-    outLabel: 'Out',
+    inLabel: 'Breathe in',
+    outLabel: 'Breathe out',
     fallback: 'That was seven slow breaths.',
   },
   // Part 3.3: STOP and the one-minute reframe get their step text here and
@@ -40,6 +44,8 @@ export const BUTTONS = {
   resume: 'Resume',
   stopExercise: 'Stop exercise',
   backToStart: 'Back to start',
+  openPractice: 'Open practice',
+  useUsual: 'Use my usual',
   close: 'Close',
 }
 
@@ -58,4 +64,4 @@ export const DONE = {
   closeHint: 'You can close this tab now.',
 }
 
-export const FOOTER = 'Coursework prototype. Not a support service.'
+export const FOOTER = 'Coursework prototype. Not a support service. Nobody monitors this app.'

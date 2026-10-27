@@ -21,7 +21,7 @@ it('crisis panel opens from the entry screen with the backend down', async () =>
   expect(wrapper.text()).toContain('Nobody monitors it.')
 
   const callsBefore = fetch.mock.calls.length
-  await wrapper.find('button.back').trigger('click')
+  await wrapper.find('button.back-to-step').trigger('click')
   await button.trigger('click')
   expect(fetch.mock.calls.length).toBe(callsBefore) // opening the panel makes no request
   wrapper.unmount()

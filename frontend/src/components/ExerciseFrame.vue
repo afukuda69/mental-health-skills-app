@@ -1,40 +1,14 @@
 <script setup>
-// Wraps every exercise step: the step plus Stop exercise. Crisis support is
-// rendered by App.vue, so it stays visible here too. No navigation, no
-// history link, no progress bar (design.md section c).
-import { BUTTONS } from '../content/skills.js'
-
-defineEmits(['stop'])
+// Shared header for the exercise: the skill name only. No navigation, no
+// history link, no progress bar inside the exercise (design.md section c, D1).
+// The skill renders its own one-tap Stop exercise next to its controls. While
+// it runs, the tab bar contracts to the Crisis tab alone (App.vue).
+defineProps({ title: { type: String, required: true } })
 </script>
 
 <template>
-  <div class="frame">
-    <button type="button" class="stop" @click="$emit('stop')">{{ BUTTONS.stopExercise }}</button>
-    <div class="step">
-      <slot />
-    </div>
-  </div>
+  <main class="screen exercise">
+    <h1>{{ title }}</h1>
+    <slot />
+  </main>
 </template>
-
-<style scoped>
-.frame {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-.stop {
-  position: fixed;
-  top: 12px;
-  left: 16px;
-  z-index: 100;
-}
-.step {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 72px 16px 32px;
-  text-align: center;
-}
-</style>

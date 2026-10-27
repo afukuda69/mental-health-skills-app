@@ -21,7 +21,7 @@ defineEmits(['close'])
         </li>
       </ul>
       <p v-for="n in CRISIS.notes" :key="n" class="note">{{ n }}</p>
-      <button type="button" class="back" @click="$emit('close')">{{ CRISIS.back }}</button>
+      <button type="button" class="primary back-to-step" @click="$emit('close')">{{ CRISIS.back }}</button>
     </div>
   </div>
 </template>
@@ -41,7 +41,7 @@ defineEmits(['close'])
   width: 100%;
   max-width: 440px;
   padding: 24px;
-  border-radius: 12px;
+  border-radius: var(--radius);
   background: var(--surface);
   color: var(--text);
 }
@@ -78,8 +78,7 @@ h2 {
   color: var(--muted);
   margin: 4px 0;
 }
-.back {
+.back-to-step {
   margin-top: 16px;
-  width: 100%;
 }
 </style>

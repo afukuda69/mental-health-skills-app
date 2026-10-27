@@ -12,7 +12,8 @@
 - Evidence in [docs/evidence/3.2/](docs/evidence/3.2/):
   - [pytest-output.txt](docs/evidence/3.2/pytest-output.txt), [vitest-output.txt](docs/evidence/3.2/vitest-output.txt)
   - [api-checks.md](docs/evidence/3.2/api-checks.md): every endpoint in every `LLM_MODE`, with the resulting database rows
-  - [browser-run.md](docs/evidence/3.2/browser-run.md) and [browser/](docs/evidence/3.2/browser/): headless Chromium runs of the real UI, with screenshots
+  - [restyle-run.md](docs/evidence/3.2/restyle-run.md) and [restyle/](docs/evidence/3.2/restyle/): the same browser checks re-run on the **current look**, with screenshots
+  - [browser-run.md](docs/evidence/3.2/browser-run.md) and [browser/](docs/evidence/3.2/browser/): the original headless Chromium runs. Their screenshots show the earlier look; behavior is the same
   - [live-latency-run1.txt](docs/evidence/3.2/live-latency-run1.txt), [live-latency-run2.txt](docs/evidence/3.2/live-latency-run2.txt): live model latency and outputs
   - [server-path-diagnosis.md](docs/evidence/3.2/server-path-diagnosis.md): why live server calls timed out, the fixes, and a model comparison
   - [port-conflict.txt](docs/evidence/3.2/port-conflict.txt), [vitest-first-failure.txt](docs/evidence/3.2/vitest-first-failure.txt): failures and their fixes
@@ -20,10 +21,10 @@
 
 ## What is complete
 
-- **Paced breathing end to end** through the running interface: entry ("How are you right now?"), skill picker, intro, 7 × (4 s in / 6 s out) with the "3 of 7" counter, closing acknowledgment, check-in, Done. Pause and Resume. A reduced-motion version (still circle, label and seconds countdown).
+- **Paced breathing end to end** through the running interface: Home (optional "How are you right now?" choice, then Open practice or Use my usual), intro, 7 × (4 s in / 6 s out) with "Breathe in" / "Breathe out" and "Cycle n of 7", closing acknowledgment, check-in, Done. Pause and Resume. An "Animate circle" switch, which starts from the system's reduce-motion setting; with it off, the circle stays still and the label carries the pace (no seconds countdown).
 - **Model contribution** as designed: one short closing acknowledgment from the entry choice and a count of earlier sessions. It is requested at the start of cycle 7 and never blocks the timer. Output is checked in code (≤ 30 words, no `?`/`!`, banned words, must end with a full stop), with a 5 s wall-clock limit (the response is abandoned at the deadline) and fixed fallback text. Model reasoning is off by default.
 - **Persistence in SQLite:** `sessions` (timing, end reason, entry choice, steps), `messages` (the conversation record: model, fallback, scripted, and user rows, with `model_status`, `latency_ms`, `crisis_flag`), and `feedback`. History and "Use my usual" read from it.
-- **Crisis route independent of the backend, model, and any classifier:** a static panel in the root layout, visible on every screen. Verified with the backend down.
+- **Crisis route independent of the backend, model, and any classifier:** a Crisis tab in the bottom bar on every screen, the only tab while the exercise runs, opening a static panel. Verified with the backend down.
 - **Supplementary phrase check** before any model call (one shared list): scripted reply, no model call, crisis flag stored without the text. Verified by tests and the API. There is no typed input in breathing, so the browser version comes with the 3.3 reframe.
 - **Exits:** Stop exercise (one tap, no dialog) → `stopped` → "Stopped. That's fine."; leaving the page → `left` via `sendBeacon`; returning to a hidden tab finds the exercise paused.
 - **Mock and failure modes:** `mock`, `mock_error`, `mock_timeout`, `mock_malformed`, `live`, and an `LLM_MAX_CALLS` cap (default 50) that switches to mock.

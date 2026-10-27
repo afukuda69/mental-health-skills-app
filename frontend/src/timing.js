@@ -6,6 +6,8 @@ export function plannedMs(skill) {
   return skill.introMs + skill.cycles * (skill.inMs + skill.outMs)
 }
 
+export const plannedSeconds = (skill) => Math.round(plannedMs(skill) / 1000)
+
 // Where the breathing exercise is, given active ms since the first instruction
 // and the active ms at which the intro ended (null while still in the intro).
 export function breathingPosition(skill, activeMs, introEndMs) {

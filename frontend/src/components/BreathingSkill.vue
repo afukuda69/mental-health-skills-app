@@ -20,7 +20,10 @@ const paused = ref(false)
 const introEnd = ref(null)
 const pos = ref(breathingPosition(skill, 0, null))
 const closingText = ref(null)
-const reducedMotion = ref(false)
+// "Animate circle" is a user control that starts from prefers-reduced-motion.
+// With it off the circle stays still and the "Breathe in / Breathe out" label
+// carries the pace. No seconds countdown (D6: a ticking number reads as demand).
+const animate = ref(true)
 
 const session = useExerciseSession({
   skill,
@@ -91,104 +94,135 @@ watch(
   (open) => (open ? clock.hold('crisis') : clock.release('crisis')),
 )
 
-let motionQuery = null
-const onMotionChange = (e) => (reducedMotion.value = e.matches)
-
 onMounted(() => {
-  motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-  reducedMotion.value = motionQuery.matches
-  motionQuery.addEventListener('change', onMotionChange)
+  animate.value = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
   session.begin()
   frame = requestAnimationFrame(tick)
 })
-onUnmounted(() => {
-  cancelAnimationFrame(frame)
-  motionQuery?.removeEventListener('change', onMotionChange)
-})
+onUnmounted(() => cancelAnimationFrame(frame))
 
 const phaseLabel = computed(() => (pos.value.phase === 'in' ? skill.inLabel : skill.outLabel))
 const circleStyle = computed(() =>
-  reducedMotion.value ? {} : { transform: `scale(${circleScale(pos.value).toFixed(4)})` },
+  animate.value && pos.value.stage === 'breathing' ? { transform: `scale(${circleScale(pos.value).toFixed(4)})` } : {},
 )
 </script>
 
 <template>
-  <ExerciseFrame @stop="stop">
-    <template v-if="pos.stage === 'intro'">
-      <p class="instruction">{{ skill.intro }}</p>
-      <button type="button" class="primary" @click="startNow">{{ BUTTONS.start }}</button>
-    </template>
-
-    <template v-else-if="pos.stage === 'breathing'">
-      <div class="circle-area" aria-live="polite">
-        <div class="circle" :class="{ still: reducedMotion, out: pos.phase === 'out' }" :style="circleStyle">
-          <span class="phase">{{ phaseLabel }}</span>
-          <span v-if="reducedMotion" class="seconds">{{ pos.phaseRemainingS }}</span>
-        </div>
+  <ExerciseFrame :title="skill.label">
+    <div class="circle-area">
+      <div class="ring">
+        <div class="circle" :class="{ still: !animate, out: !animate && pos.phase === 'out' }" :style="circleStyle"></div>
       </div>
-      <p class="counter">{{ pos.cycle }} of {{ skill.cycles }}</p>
-      <button type="button" class="quiet" @click="togglePause">
-        {{ paused ? BUTTONS.resume : BUTTONS.pause }}
-      </button>
-    </template>
+    </div>
 
-    <template v-else>
+    <section v-if="pos.stage === 'intro'" class="state">
+      <p class="instruction">{{ skill.intro }}</p>
+      <div class="tiles">
+        <div class="card tile"><span class="muted small">{{ skill.inLabel }}</span><strong>4</strong><span class="muted small">seconds</span></div>
+        <div class="card tile"><span class="muted small">{{ skill.outLabel }}</span><strong>6</strong><span class="muted small">seconds</span></div>
+      </div>
+      <button type="button" class="primary" @click="startNow">{{ BUTTONS.start }}</button>
+      <button type="button" class="danger-soft" @click="stop">{{ BUTTONS.stopExercise }}</button>
+    </section>
+
+    <section v-else-if="pos.stage === 'breathing'" class="state" aria-live="polite">
+      <h2>{{ phaseLabel }}</h2>
+      <p class="muted">Cycle {{ pos.cycle }} of {{ skill.cycles }}</p>
+      <button type="button" class="danger-soft" @click="stop">{{ BUTTONS.stopExercise }}</button>
+      <button type="button" @click="togglePause">{{ paused ? BUTTONS.resume : BUTTONS.pause }}</button>
+    </section>
+
+    <section v-else class="state" aria-live="polite">
       <p v-if="closingText" class="instruction">{{ closingText }}</p>
       <button v-if="closingText" type="button" class="primary" @click="emit('finished', session.clientId)">
         {{ BUTTONS.continue }}
       </button>
-    </template>
+      <button type="button" class="danger-soft" @click="stop">{{ BUTTONS.stopExercise }}</button>
+    </section>
+
+    <label class="card toggle">
+      <span>Animate circle</span>
+      <input v-model="animate" type="checkbox" role="switch" />
+    </label>
+    <p class="notes muted small">
+      Stop exercise is always available. Opening Crisis pauses the timer.<br />
+      Sessions save when you stop, finish, or leave this page. Paused time is excluded.
+    </p>
   </ExerciseFrame>
 </template>
 
 <style scoped>
-.instruction {
-  max-width: 28ch;
-  font-size: 1.35rem;
-  line-height: 1.5;
-  margin: 0 0 24px;
-}
 .circle-area {
-  width: 260px;
-  height: 260px;
   display: flex;
-  align-items: center;
   justify-content: center;
+  margin: 4px 0 18px;
 }
-.circle {
+.ring {
   width: 240px;
   height: 240px;
   border-radius: 50%;
-  background: var(--circle);
-  /* Edge keeps the circle distinct from the gradient (>= 3:1), not only by hue. */
+  border: 1px solid var(--sage-strong);
+  display: grid;
+  place-items: center;
+}
+.circle {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--circle-out), var(--circle) 70%);
   border: 2px solid var(--circle-edge);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   will-change: transform;
 }
-/* Reduced motion: no scaling. The label and a once-a-second countdown carry the pace. */
-.circle.still {
-  width: 180px;
-  height: 180px;
-  border: 3px solid var(--accent);
-}
+/* Animation off: a still circle; the label changes, the fill shifts slightly on "Breathe out". */
 .circle.still.out {
   background: var(--circle-out);
 }
-.phase {
-  font-size: 1.4rem;
-  color: var(--text);
+.state {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
 }
-.seconds {
-  font-size: 1.1rem;
-  color: var(--muted);
-  margin-top: 4px;
+.state h2 {
+  margin: 0;
 }
-.counter {
-  color: var(--faint);
-  font-size: 0.95rem;
-  margin: 16px 0 24px;
+.instruction {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+}
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+}
+.tile strong {
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+.small {
+  font-size: 0.85rem;
+  margin: 0;
+}
+.toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding: 14px 18px;
+}
+.toggle input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--accent);
+}
+.notes {
+  margin-top: 14px;
+  text-align: center;
 }
 </style>

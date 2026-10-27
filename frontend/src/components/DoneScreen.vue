@@ -16,22 +16,27 @@ function close() {
 
 <template>
   <main class="screen">
-    <h1>{{ stopped ? DONE.stopped : DONE.finished }}</h1>
-    <div class="options">
-      <button type="button" class="primary" @click="$emit('restart')">{{ BUTTONS.backToStart }}</button>
-      <button type="button" @click="close">{{ BUTTONS.close }}</button>
+    <div class="card done">
+      <h1>{{ stopped ? DONE.stopped : DONE.finished }}</h1>
+      <div class="actions">
+        <button type="button" class="primary" @click="$emit('restart')">{{ BUTTONS.backToStart }}</button>
+        <button type="button" @click="close">{{ BUTTONS.close }}</button>
+      </div>
+      <p v-if="showCloseHint" class="muted hint">{{ DONE.closeHint }}</p>
     </div>
-    <p v-if="showCloseHint" class="hint">{{ DONE.closeHint }}</p>
   </main>
 </template>
 
 <style scoped>
-.options {
+.done h1 {
+  font-size: 1.6rem;
+}
+.actions {
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  gap: 10px;
 }
 .hint {
-  margin-top: 16px;
-  color: var(--muted);
+  margin: 14px 0 0;
 }
 </style>

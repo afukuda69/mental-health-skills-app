@@ -1,4 +1,4 @@
-// Checks the style tokens against WCAG AA on both background gradient stops.
+// Checks the style tokens against WCAG AA on every background a text token sits on.
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -21,25 +21,27 @@ const contrast = (a, b) => {
   return (hi + 0.05) / (lo + 0.05)
 }
 
-const stops = [token('bg-top'), token('bg-bottom')]
+// Backgrounds text appears on: the app column, white cards, the sage featured card, the page edge.
+const backgrounds = ['bg', 'surface', 'sage', 'page']
 
-describe('contrast on the gradient background', () => {
-  it.each(['text', 'muted', 'faint', 'crisis-text'])('--%s text is at least 4.5:1 on both stops', (name) => {
-    for (const bg of stops) expect(contrast(token(name), bg)).toBeGreaterThanOrEqual(4.5)
+describe('contrast on the app backgrounds', () => {
+  it.each(['text', 'muted', 'faint', 'accent', 'crisis-text'])('--%s text is at least 4.5:1 on every background', (name) => {
+    for (const bg of backgrounds) expect(contrast(token(name), token(bg))).toBeGreaterThanOrEqual(4.5)
   })
 
-  it.each(['circle-edge', 'crisis-border'])('--%s is at least 3:1 (non-text) on both stops', (name) => {
-    for (const bg of stops) expect(contrast(token(name), bg)).toBeGreaterThanOrEqual(3)
+  it('crisis text on its pale red button is at least 4.5:1', () => {
+    expect(contrast(token('crisis-text'), token('crisis-bg'))).toBeGreaterThanOrEqual(4.5)
+  })
+
+  it.each(['circle-edge', 'crisis-border'])('--%s is at least 3:1 (non-text) on the app background', (name) => {
+    expect(contrast(token(name), token('bg'))).toBeGreaterThanOrEqual(3)
   })
 
   it('white button text on --accent is at least 4.5:1', () => {
     expect(contrast('#ffffff', token('accent'))).toBeGreaterThanOrEqual(4.5)
   })
 
-  it('the gradient layer is static', () => {
-    const rule = css.slice(css.indexOf('body::before'), css.indexOf('}', css.indexOf('body::before')))
-    expect(rule).toContain('position: fixed')
-    expect(rule).toContain('linear-gradient')
-    expect(rule).not.toMatch(/animation|transition/)
+  it('the stylesheet has no animation (motion only on the breathing cue, D6)', () => {
+    expect(css).not.toMatch(/@keyframes|animation\s*:/)
   })
 })

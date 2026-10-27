@@ -3,6 +3,7 @@
 
 export const CRISIS = {
   title: 'Crisis support',
+  tab: 'Crisis',
   intro: 'If you might be in danger or need to talk to someone now:',
   resources: [
     { name: '988 Suicide & Crisis Lifeline', detail: 'Call or text 988', links: [{ label: 'Call 988', href: 'tel:988' }, { label: 'Text 988', href: 'sms:988' }] },

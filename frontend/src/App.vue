@@ -1,20 +1,21 @@
 <script setup>
-// Root layout. CrisisButton and CrisisPanel sit outside every v-if, so they
-// show on every screen, including loading and error states.
-import { onMounted, ref } from 'vue'
+// Root layout. The tab bar (with the Crisis tab) and CrisisPanel sit outside
+// every v-if, so the Crisis tab shows on every screen, including the
+// exercise, loading and error states. While the exercise runs, the bar
+// contracts to the Crisis tab alone (D1: no navigation inside an exercise).
+import { computed, onMounted, ref } from 'vue'
 import { getJSON, send } from './api.js'
 import BreathingSkill from './components/BreathingSkill.vue'
 import CheckIn from './components/CheckIn.vue'
-import CrisisButton from './components/CrisisButton.vue'
 import CrisisPanel from './components/CrisisPanel.vue'
 import DoneScreen from './components/DoneScreen.vue'
-import EntryScreen from './components/EntryScreen.vue'
 import HistoryView from './components/HistoryView.vue'
-import SkillPicker from './components/SkillPicker.vue'
+import HomeScreen from './components/HomeScreen.vue'
+import TabBar from './components/TabBar.vue'
 
 const SKILL_COMPONENTS = { breathing: BreathingSkill }
 
-const screen = ref('entry')
+const screen = ref('home')
 const crisisOpen = ref(false)
 const usualSkill = ref(null)
 const entryChoice = ref(null)
@@ -24,29 +25,32 @@ const stopped = ref(false)
 let lastClientId = null
 let entryShownAt = performance.now()
 
+const activeTab = computed(() => (screen.value === 'history' ? 'history' : screen.value === 'home' ? 'home' : null))
+
 async function loadUsual() {
   try {
     usualSkill.value = (await getJSON('/usual', 3000)).skill
   } catch {
-    usualSkill.value = null // no button; the picker still works
+    usualSkill.value = null // no usual label; the practice still starts
   }
 }
 
-function toEntry() {
-  screen.value = 'entry'
+function toHome() {
+  screen.value = 'home'
   entryChoice.value = null
   stopped.value = false
   entryShownAt = performance.now()
   loadUsual()
 }
 
-function choose(key) {
-  entryChoice.value = key
-  screen.value = 'picker'
+function navigate(to) {
+  if (to === 'home') toHome()
+  else screen.value = to
 }
 
 function startSkill(id) {
   skillId.value = id
+  // Entry is timed separately from the exercise (design.md section d).
   setupMs.value = performance.now() - entryShownAt
   screen.value = 'exercise'
 }
@@ -70,16 +74,14 @@ onMounted(loadUsual)
 </script>
 
 <template>
-  <CrisisButton @open="crisisOpen = true" />
-
-  <EntryScreen
-    v-if="screen === 'entry'"
+  <HomeScreen
+    v-if="screen === 'home'"
     :usual-skill="usualSkill"
-    @choose="choose"
-    @use-usual="startSkill(usualSkill)"
+    :entry-choice="entryChoice"
+    @choose="entryChoice = $event"
+    @start="startSkill"
     @history="screen = 'history'"
   />
-  <SkillPicker v-else-if="screen === 'picker'" :usual-skill="usualSkill" @pick="startSkill" @back="toEntry" />
   <component
     :is="SKILL_COMPONENTS[skillId]"
     v-else-if="screen === 'exercise'"
@@ -90,8 +92,9 @@ onMounted(loadUsual)
     @stopped="onStopped"
   />
   <CheckIn v-else-if="screen === 'checkin'" @answer="onAnswer" />
-  <DoneScreen v-else-if="screen === 'done'" :stopped="stopped" @restart="toEntry" />
-  <HistoryView v-else-if="screen === 'history'" @back="toEntry" />
+  <DoneScreen v-else-if="screen === 'done'" :stopped="stopped" @restart="toHome" />
+  <HistoryView v-else-if="screen === 'history'" @navigate="navigate" />
 
+  <TabBar :active="activeTab" :contracted="screen === 'exercise'" @navigate="navigate" @crisis="crisisOpen = true" />
   <CrisisPanel v-if="crisisOpen" @close="crisisOpen = false" />
 </template>
