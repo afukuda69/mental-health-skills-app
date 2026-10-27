@@ -16,7 +16,7 @@
   - [live-latency-run1.txt](docs/evidence/3.2/live-latency-run1.txt), [live-latency-run2.txt](docs/evidence/3.2/live-latency-run2.txt): live model latency and outputs
   - [server-path-diagnosis.md](docs/evidence/3.2/server-path-diagnosis.md): why live server calls timed out, the fixes, and a model comparison
   - [port-conflict.txt](docs/evidence/3.2/port-conflict.txt), [vitest-first-failure.txt](docs/evidence/3.2/vitest-first-failure.txt): failures and their fixes
-  - [manual-checks.md](docs/evidence/3.2/manual-checks.md): browser checklist with expected results and an Observed column; evidence is one screen recording (link to be added) plus pasted terminal output
+  - [manual-checks.md](docs/evidence/3.2/manual-checks.md): browser checklist with expected results and an Observed column; evidence is one [screen recording](https://drive.google.com/file/d/129JPv1-0rBF0R__5kqGLcC7qO--4IEpB/view?usp=sharing) plus pasted terminal output
 
 ## What is complete
 
@@ -62,7 +62,7 @@
 - **STOP and the reframe** are deferred to Part 3.3. The registry and the step frame are ready for them.
 - **Crisis phrase list:** it misses misspellings, indirect phrasing, and other languages, and it gives false positives on idioms. It is a supplement, not a safety mechanism. In 3.2 it can only be exercised through the API, because breathing has no typed input.
 - **Tab close** sends `left` with `sendBeacon` on `pagehide`/`visibilitychange`. This was verified for navigating away, but **not for a real tab close**: headless `page.close()` sent nothing. Manual check 6 must confirm it. If the browser drops the beacon, the session stays without an end reason and shows as "Not finished" in History.
-- **Manual checks** in a real browser, including a live model run, are still to be done by me ([manual-checks.md](docs/evidence/3.2/manual-checks.md)). Evidence will be one screen recording (link to be added) plus terminal output in the Observed column.
+- **Manual checks** in a real browser, including a live model run, are in the [screen recording](https://drive.google.com/file/d/129JPv1-0rBF0R__5kqGLcC7qO--4IEpB/view?usp=sharing). The terminal output for the Observed column of [manual-checks.md](docs/evidence/3.2/manual-checks.md) still needs to be added.
 - **Live model:** before the reasoning fix, about 40% of acknowledgments fell back because of latency. After it, the few calls made (n = 2 on the current model) were 1.9–2.8 s, which is not yet a reliable rate. The key is free tier: free models can be rate-limited (one returned 429), and the app falls back. Whether the model adds anything over the fallback (open question 5) needs peer testing.
 - **Platform:** tested on macOS only (Chromium headless, Python 3.14, Node 24). The Windows PowerShell commands in the README are untested.
 - **Crisis resources** are US-only.
