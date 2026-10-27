@@ -1,0 +1,20 @@
+# First run of frontend/tests/crisisRoute.test.js (2026-10-27), before the fix in d7cbb7b
+$ npx vitest run
+
+ ❯ tests/crisisRoute.test.js:31:17
+     29| it('crisis components import only static content: no fetch, no await, …
+     30|   for (const file of ['CrisisPanel.vue', 'CrisisButton.vue']) {
+     31|     const src = readFileSync(new URL(`../src/components/${file}`, impo…
+       |                 ^
+     32|     expect(src).not.toMatch(/fetch|await|api\.js/)
+     33|     const imports = [...src.matchAll(/from '([^']+)'/g)].map((m) => m[…
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 7 passed (8)
+
+Cause: under the happy-dom environment, import.meta.url is not a file: URL, so
+readFileSync(new URL(...)) fails. Second problem found while fixing: the regex
+/fetch|await/ would also match the comment in CrisisPanel.vue that says
+"No fetch, no await", so the test could never pass for the right reason.
+Fix: read from process.cwd(); match real calls only (/\bfetch\(|\bawait\s|api\.js/).
+After the fix: Tests 8 passed (8).

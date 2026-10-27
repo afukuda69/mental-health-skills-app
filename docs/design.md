@@ -221,13 +221,34 @@ The app uses the usual skill in two places: the "Use my usual" button on entry, 
 
 ## k. Open questions
 
-1. Should history show the user's own typed reframe text? (Default: no. Shown only on a deliberate tap? Never?)
+Status after Part 3.2 is marked in **bold**. Evidence is in [docs/evidence/3.2/](evidence/3.2/).
+
+1. Should history show the user's own typed reframe text? (Default: no. Shown only on a deliberate tap? Never?) **Partly answered: 3.2 keeps the default. The API never returns typed text to history. The saved acknowledgment appears only after a deliberate "Show message" tap. Whether typed reframe text should ever be shown stays open for 3.3.**
 2. Should the entry choice influence which skill is labelled as suggested, or should only history do that?
 3. Entry option wording: are "Tense or wound up / Overwhelmed / Okay, just want a minute" neutral enough (D6)?
 4. Does the "3 of 7" breathing counter help people know when it ends, or add demand (D3, D6)?
-5. Does the model's breathing acknowledgment add anything over the fixed fallback? To be evaluated in 3.2 with mocked and live calls.
+5. Does the model's breathing acknowledgment add anything over the fixed fallback? To be evaluated in 3.2 with mocked and live calls. **Provisional answer: very little. In 19 live calls, the model text that passed the check restated the fallback plus the entry choice and the session count (e.g. "You completed seven paced breaths after starting out feeling tense. This was your first breathing session."). Only 10 of 19 arrived in time and passed the check. Whether users notice the difference needs peer testing (3.3).**
 6. Should the user be able to clear history? This is a control, not configuration, but it adds a screen.
-7. Should crisis-panel opens be counted (with no content) to support the evaluation, or left unrecorded as now?
-8. Is 5 s the right model timeout for the chosen provider? To be measured in 3.2.
-9. Crisis resources are US-only. Is that acceptable for a localhost coursework prototype? Note it in the README.
-10. After Stop exercise, should the user go to Done (current) or straight back to entry?
+7. Should crisis-panel opens be counted (with no content) to support the evaluation, or left unrecorded as now? **Still open. Panel opens remain unrecorded. 3.2 does record a crisis flag (with no text) when typed text matches the phrase list; see section l.**
+8. Is 5 s the right model timeout for the chosen provider? To be measured in 3.2. **Measured: with `nvidia/nemotron-3-ultra-550b-a55b:free` on OpenRouter, 10 of 17 raw calls finished within 5 s (median 3.5 s, max 45.9 s), and 2 more calls through the server both timed out. Keep 5 s: the request starts at cycle 7, 10 s before the closing step, so the timeout never delays the user, and the fallback covers the rest. A faster model would raise the share of model text. Raising the timeout to about 9 s would add no visible delay either, but AGENTS.md fixes it at 5 s, so that would be a design change for 3.3.**
+9. Crisis resources are US-only. Is that acceptable for a localhost coursework prototype? Note it in the README. **Addressed for 3.2: the README and the crisis panel both say the resources are for the United States.**
+10. After Stop exercise, should the user go to Done (current) or straight back to entry? **Kept as Done in 3.2 (verified in the browser run). Still open for peer testing.**
+
+## l. Changes since 3.1
+
+Part 3.2 code deviates from sections c–g in these ways. Each is also logged in [evidence-log.md](evidence-log.md).
+
+| # | Change | Section | Why |
+|---|---|---|---|
+| 1 | **Schema additions.** `sessions` gains `client_id` (UUID made in the browser), `end_reason` (`completed` / `stopped` / `left`), `setup_ms`, `planned_ms`, `measured_ms`, `pauses_ms`, `crisis_ms`, `steps_planned`, `steps_completed`. `messages` gains `model_status` (`ok` / `mock` / `fallback` / `error` / `timeout` / `scripted`), `latency_ms`, `crisis_flag`, and a `scripted` role. A session is the conversation container; there is no separate conversations table. | g | Proves timing and exits from stored data. A client-made id lets every session write be fire-and-forget, so no exercise step waits for the backend. |
+| 2 | **"Left" end reason.** `pagehide` and `visibilitychange` send `left` with `navigator.sendBeacon`. A hidden tab pauses the exercise, which waits with **Resume**. A later `completed` or `stopped` overwrites `left`, never the reverse. | c, g | 3.2 must show what happens when the user leaves. Tab switches also fire these events, so `left` must not be final. |
+| 3 | **Pause button** on the breathing screen. | c | Requested for 3.2. Pause time is excluded from `measured_ms` and stored in `pauses_ms`. |
+| 4 | **Crisis flag stored.** When typed text matches the phrase list, the app saves a user row with **no text** and `crisis_flag = 1`, plus the scripted reply. Panel opens are still not recorded. | f, g | Makes the check verifiable from the database without storing the sensitive text. |
+| 5 | **The keyword check also runs in the backend**, before any model call, from one shared list `shared/crisis_phrases.json` that the frontend also reads. | f | The model must never see matching text, even if a client skips the frontend check. One file keeps both sides in sync. |
+| 6 | **Output check addition:** a reply must end with a full stop. | e | A live reply cut off mid-sentence passed the 3.1 checks ([live-latency-run1.txt](evidence/3.2/live-latency-run1.txt), call 3). |
+| 7 | **The 5 s limit is wall-clock** (a thread with a deadline), not just the HTTP client timeout. | e | httpx limits each read step: one live call took 45.9 s with a 30 s httpx timeout. |
+| 8 | **History** shows "Left the page" for `left` and "Not finished" for sessions with no end record (e.g. the backend was down when the session ended). | c | Neutral labels for the new end states. |
+
+### Measured duration (3.2)
+
+Paced breathing, headless Chromium, mock model ([browser-run.md](evidence/3.2/browser-run.md)): **75 010 ms** measured from the intro text to the closing text on screen, against **75 000 ms** planned. Pause and crisis-panel time are stored separately (a run with a 3 s pause and 5 s in the crisis panel measured 75 007 ms, with `pauses_ms` 3 034 and `crisis_ms` 5 082). Entry and skill pick are stored as `setup_ms` and reported separately. A real-browser run with a live model is manual check 1/2b.

@@ -4,7 +4,7 @@ Notes for AI coding agents working in this repo. Read [docs/design.md](docs/desi
 
 ## Project status
 
-Part 3.1 (design) only: there is no application code yet. Part 3.2 builds paced breathing end to end. Part 3.3 adds STOP and the cognitive reframe.
+Part 3.2 is built: paced breathing runs end to end. Part 3.3 adds STOP and the cognitive reframe: add their text to `content/skills.js`, set `available: true`, and add one component each (reuse `ExerciseFrame.vue` and `composables/useExerciseSession.js`). Code deviations from the 3.1 design are listed in docs/design.md §l.
 
 ## Stack
 
@@ -13,25 +13,34 @@ Part 3.1 (design) only: there is no application code yet. Part 3.2 builds paced 
 - SQLite file `backend/skills.db`: gitignored, created on first run.
 - Model API key in `.env` (gitignored). Never commit keys.
 
-## Planned folder layout
+## Folder layout
 
 ```
 backend/
   main.py            # thin FastAPI routes only
   db.py              # schema (sessions, messages, feedback), connection helper
   sessions.py        # session/feedback/history logic, "usual skill" derivation
-  model_client.py    # single LLM-call wrapper: system prompt, 5s timeout, output check, fallback
-  tests/             # pytest; model always mocked
+  model_client.py    # single LLM-call wrapper: system prompt, 5 s wall-clock timeout, output check, fallback, mock modes
+  crisis.py          # supplementary phrase check, runs before any model call
+  config.py          # settings from backend/.env
+  scripts/           # live_latency.py, api_checks.sh, show_db.py
+  tests/             # pytest; model always mocked; fixtures/mock_responses.json
+shared/
+  crisis_phrases.json        # the one phrase list (backend + frontend)
 frontend/src/
-  App.vue
+  App.vue                    # root layout: CrisisButton + CrisisPanel outside every screen
+  api.js                     # fire-and-forget writes, sendBeacon, acknowledgment request
+  timing.js                  # breathing schedule + exercise clock (pure)
+  composables/useExerciseSession.js  # session record, timing, "left" on pagehide
   content/skills.js          # ALL skill step text and timings (source of truth)
   content/crisis.js          # static crisis resources
-  content/crisisKeywords.js  # supplementary keyword list
+  content/crisisKeywords.js  # matcher over shared/crisis_phrases.json
   components/
     EntryScreen.vue  SkillPicker.vue  CheckIn.vue  DoneScreen.vue  HistoryView.vue
-    BreathingSkill.vue  StopSkill.vue  ReframeSkill.vue
-    ExerciseFrame.vue        # wraps every exercise step: Stop exercise + Crisis support
+    BreathingSkill.vue       # StopSkill.vue and ReframeSkill.vue come in 3.3
+    ExerciseFrame.vue        # wraps every exercise step: Stop exercise + step
     CrisisButton.vue  CrisisPanel.vue
+frontend/tests/              # vitest
 docs/
 ```
 
@@ -48,24 +57,27 @@ docs/
 9. **Never auto-start a skill.** Suggestions are labels only. The user taps to start.
 10. The keyword check is a **supplement**. Never describe it, or a system prompt, as the safety mechanism.
 
-## PowerShell commands (planned, Windows)
+## Commands (macOS, bash/zsh)
 
-```powershell
+```bash
 # backend
 cd backend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-uvicorn main:app --reload --port 8000
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+cp .env.example .env
+.venv/bin/uvicorn main:app --reload --port 8000
 
 # frontend (second terminal)
 cd frontend
 npm install
-npm run dev
+npm run dev            # if 8000 is taken: API_PORT=8010 npx vite --port 5180
 
 # tests
-cd backend; .\.venv\Scripts\Activate.ps1; python -m pytest
+cd backend && .venv/bin/python -m pytest
+cd frontend && npm test
 ```
+
+PowerShell equivalents for Windows are in the README.
 
 ## Testing expectations
 
