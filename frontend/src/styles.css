@@ -1,0 +1,87 @@
+/* Low-stimulus palette (design.md D6): muted, low saturation, no bright accents. */
+:root {
+  --bg: #f3f2ee;
+  --surface: #fbfaf7;
+  --text: #33373a;
+  --muted: #62686d;
+  --faint: #8a9095;
+  --line: #dddbd4;
+  --accent: #7f9a94;
+  --circle: rgba(127, 154, 148, 0.32);
+  --circle-out: rgba(127, 154, 148, 0.16);
+  --button: #e7e5de;
+  --button-hover: #dedbd2;
+  --focus: #6b8580;
+  --crisis-bg: #f8eceb;
+  --crisis-border: #9c5550;
+  --crisis-text: #7d3a35;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 16px 32px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 24px;
+}
+
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--button);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 18px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+button:hover {
+  background: var(--button-hover);
+}
+button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+button.quiet {
+  background: transparent;
+}
+button.link {
+  background: none;
+  border: none;
+  padding: 4px;
+  color: var(--muted);
+  text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

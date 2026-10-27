@@ -1,0 +1,22 @@
+# Port conflict during Phase C verification (2026-10-27, macOS)
+
+First proxy check: curl localhost:5173/api/health returned another app's index.html (title 'Hello Agent') instead of {"status":"ok"}.
+
+## vite log
+error when starting dev server:
+Error: Port 5173 is already in use
+    at Server.onError (file:///Users/owner/mental-health-skills-app/frontend/node_modules/vite/dist/node/chunks/dep-BJP6rrE_.js:30538:18)
+    at Server.emit (node:events:514:28)
+    at emitErrorNT (node:net:2412:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+## uvicorn log (tail)
+ERROR:    [Errno 48] error while attempting to bind on address ('127.0.0.1', 8000): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+
+## lsof
+5173: node .../helloagent/frontend/node_modules/.bin/vite
+8000: uvicorn app.main:app --port 8000 (helloagent backend)
+
+Fix: vite.config.js reads API_PORT for the proxy target; checks re-run on backend 8010 / frontend 5180.
