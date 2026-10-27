@@ -58,6 +58,7 @@ API_PORT=8010 npx vite --port 5180                  # frontend
 | `LLM_MODE` | `mock`, `live`, `mock_error`, `mock_timeout`, `mock_malformed` | `mock` |
 | `LLM_API_KEY` | OpenRouter key (live only) | empty |
 | `LLM_MODEL` | OpenRouter model id (live only) | empty |
+| `LLM_REASONING` | `off`, `on` (let the model reason first; slower) | `off` |
 | `LLM_MAX_CALLS` | live calls per server run, then mock | `50` |
 | `SKILLS_DB_PATH` | SQLite file path | `backend/skills.db` |
 
@@ -72,12 +73,14 @@ LLM_MODE=mock_timeout .venv/bin/uvicorn main:app --port 8000   # simulate a slow
 
 The failure modes always show the fixed fallback text. `mock_timeout` waits the full 5 s.
 
+**Model choice:** the tested default is `nvidia/nemotron-3-ultra-550b-a55b:free` with `LLM_REASONING=off` (about 2–3 s per reply). `nvidia/nemotron-3.5-lightning:free` is faster (about 0.3 s) but its replies are vaguer. See [docs/evidence/3.2/server-path-diagnosis.md](docs/evidence/3.2/server-path-diagnosis.md).
+
 ## Tests
 
 All automated tests use mocked model responses. No network calls.
 
 ```bash
-cd backend && .venv/bin/python -m pytest      # 61 tests
+cd backend && .venv/bin/python -m pytest      # 64 tests
 cd frontend && npm test                        # 8 tests (vitest)
 ```
 

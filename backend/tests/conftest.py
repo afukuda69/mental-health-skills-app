@@ -33,6 +33,7 @@ def no_network(monkeypatch):
         raise AssertionError("Tests must not make real HTTP calls")
 
     monkeypatch.setattr(httpx, "post", refuse)
+    monkeypatch.setattr(httpx, "stream", refuse)
 
 
 @pytest.fixture

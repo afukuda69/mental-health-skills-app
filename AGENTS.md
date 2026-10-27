@@ -23,7 +23,7 @@ backend/
   model_client.py    # single LLM-call wrapper: system prompt, 5 s wall-clock timeout, output check, fallback, mock modes
   crisis.py          # supplementary phrase check, runs before any model call
   config.py          # settings from backend/.env
-  scripts/           # live_latency.py, api_checks.sh, show_db.py
+  scripts/           # live_latency.py, diag_server_path.py, compare_models.py, api_checks.sh, show_db.py
   tests/             # pytest; model always mocked; fixtures/mock_responses.json
 shared/
   crisis_phrases.json        # the one phrase list (backend + frontend)

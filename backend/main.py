@@ -5,6 +5,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -77,7 +78,8 @@ async def end_session(client_id: str, request: Request):
     except (ValueError, TypeError):
         raise HTTPException(status_code=422, detail="Invalid end payload")
     try:
-        row = sessions.end_session(client_id, **payload.model_dump())
+        # sqlite3 is blocking; keep it off the event loop in this async route.
+        row = await run_in_threadpool(sessions.end_session, client_id, **payload.model_dump())
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
     if row is None:

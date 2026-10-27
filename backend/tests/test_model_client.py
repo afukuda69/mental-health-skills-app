@@ -1,6 +1,7 @@
 """Model wrapper: mock modes, failures -> fallback, output check, call cap."""
 
 import re
+import time
 from pathlib import Path
 from unittest.mock import patch
 
@@ -119,3 +120,65 @@ def test_fallbacks_match_frontend_skills_js():
     skills_js = (Path(__file__).resolve().parents[2] / "frontend" / "src" / "content" / "skills.js").read_text()
     match = re.search(r"fallback: '([^']+)'", skills_js)
     assert match and match.group(1) == model_client.FALLBACKS["breathing"]
+
+
+# Server-path fixes (docs/evidence/3.2/server-path-diagnosis.md)
+
+
+class _KeepAliveStream:
+    """Fake httpx.stream response: whitespace keep-alive bytes that never end,
+    like OpenRouter while a slow model is still generating."""
+
+    status_code = 200
+
+    def __init__(self, *_args, **_kwargs):
+        pass
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def raise_for_status(self):
+        return None
+
+    def iter_bytes(self):
+        while True:
+            time.sleep(0.05)
+            yield b"\n         \n"
+
+
+def test_call_is_abandoned_at_the_deadline_despite_keepalive_bytes(monkeypatch):
+    monkeypatch.setenv("LLM_API_KEY", "test-key")
+    monkeypatch.setenv("LLM_MODEL", "test/model")
+    monkeypatch.setattr(model_client, "TIMEOUT_S", 0.3)
+    monkeypatch.setattr(model_client.httpx, "stream", _KeepAliveStream)
+    started = time.perf_counter()
+    with pytest.raises(model_client.LLMDeadlineError):
+        model_client._call_openrouter([{"role": "user", "content": "x"}])
+    assert time.perf_counter() - started < 0.6
+
+
+def test_abandoned_slow_calls_do_not_delay_the_next_call(monkeypatch):
+    monkeypatch.setenv("LLM_MODE", "live")
+    monkeypatch.setattr(model_client, "TIMEOUT_S", 0.3)
+    replies = iter([None] * 5 + ["You took seven slow breaths."])
+
+    def call(_messages):
+        reply = next(replies)
+        if reply is None:
+            time.sleep(2.0)  # slow, abandoned by the app at 0.3 s
+            return "You took seven slow breaths."
+        return reply
+
+    with patch.object(model_client, "_call_openrouter", side_effect=call):
+        statuses = [model_client.acknowledge("breathing", CTX).status for _ in range(6)]
+    assert statuses == ["timeout"] * 5 + ["ok"]
+
+
+def test_reasoning_off_by_default_and_configurable(monkeypatch):
+    msgs = [{"role": "user", "content": "x"}]
+    assert model_client.build_payload("m", msgs)["reasoning"] == {"enabled": False}
+    monkeypatch.setenv("LLM_REASONING", "on")
+    assert "reasoning" not in model_client.build_payload("m", msgs)

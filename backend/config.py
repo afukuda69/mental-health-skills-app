@@ -46,6 +46,11 @@ def get_llm_model() -> str | None:
     return _get("LLM_MODEL")
 
 
+def get_llm_reasoning() -> bool:
+    """LLM_REASONING=on lets the model reason before replying. Default off."""
+    return (_get("LLM_REASONING") or "off").lower() in ("on", "true", "1", "yes")
+
+
 def get_llm_max_calls() -> int:
     raw = _get("LLM_MAX_CALLS")
     try:
