@@ -1,0 +1,30 @@
+# Live latency run 1 (before truncation fix), 2026-10-27 11:45 EDT, macOS
+
+$ cd backend && .venv/bin/python scripts/live_latency.py 12
+
+model: nvidia/nemotron-3-ultra-550b-a55b:free
+calls: 12 (raw provider latency, 30 s limit; app limit is 5 s)
+
+| # | entry | latency_ms | passes check | app would show | reply |
+|---|---|---|---|---|---|
+| 1 | tense | 1402 | True | model text | You completed seven paced breaths after starting out feeling tense. |
+| 2 | overwhelmed | 4117 | True | model text | You completed seven paced breaths after starting out overwhelmed; this is your second breathing session. |
+| 3 | okay | 9543 | True | fallback (timeout) | You completed seven paced breaths, adding to your three |
+| 4 | None | 6371 | True | fallback (timeout) | You completed seven slow breaths in this first paced breathing session. |
+| 5 | tense | 3499 | True | model text | You completed seven paced breaths, starting from a tense state. This was your first breathing session. |
+| 6 | overwhelmed | 5781 | False | fallback (timeout) | The user completed a paced breathing exercise (7 slow breaths) and started feeling overwhelmed. They have 1 previous breathing session. Need to write a brief ac |
+| 7 | okay | 15036 | False | fallback (timeout) | The user completed a paced breathing exercise (7 slow breaths). They started feeling "okay, just wanting a minute." They've done 3 previous breathing sessions.  |
+| 8 | None | 45907 | True | fallback (timeout) | You completed seven slow breaths in this paced breathing session. |
+| 9 | tense | 2475 | True | model text | You completed seven paced breaths, starting from a tense, wound‑up state. This was your first breathing session. |
+| 10 | overwhelmed | 3398 | True | model text | You completed seven paced breaths after starting out feeling overwhelmed. This is your second breathing session. |
+| 11 | okay | 2172 | True | model text | You completed seven paced breaths, adding to your three earlier sessions. |
+| 12 | None | 3009 | True | model text | You completed seven slow breaths in this paced breathing session. |
+
+latency ms: min 1402, median 3808, max 45907
+under 5000 ms: 7/12
+model text shown under the app's rules: 7/12
+
+Observations:
+- Call 3 was cut off mid-sentence ("…adding to your three") yet passed check_output: under 30 words, no ?/!, no banned words. Bug: a truncated reply could be shown. Fixed in the next commit (reply must end with a full stop; max_tokens 120 -> 300).
+- Calls 6 and 7 leaked the model's reasoning ("The user completed… Need to write…"); check_output rejected both on length.
+- Call 8 took 45.9 s although httpx timeout was 30 s: httpx limits each read step, not the whole request. The app's 5 s limit is a wall-clock limit (ThreadPoolExecutor future.result(timeout=5)), so it is not affected.

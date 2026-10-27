@@ -57,6 +57,7 @@ def test_reframe_fallback_text(monkeypatch):
         "You should do this every morning.",
         "Great job on finishing all seven breaths.",
         "I remember you came in tense last time.",
+        "You completed seven paced breaths, adding to your three",
     ],
 )
 def test_check_output_rejects(text):
@@ -68,7 +69,7 @@ def test_check_output_rejects(text):
     [
         "You came in feeling tense and took seven slow breaths.",
         "Another way to see it: it may not be as certain as it feels.",
-        " ".join(["word"] * 30),
+        " ".join(["word"] * 29) + " word.",
     ],
 )
 def test_check_output_accepts(text):

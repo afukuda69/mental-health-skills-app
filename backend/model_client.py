@@ -100,6 +100,10 @@ def check_output(text: str | None) -> bool:
         return False
     if "?" in text or "!" in text:
         return False
+    # A reply cut off by the token limit can pass every other check
+    # (docs/evidence/3.2/live-latency-run1.txt, call 3).
+    if not text.rstrip().endswith((".", '."', ".'")):
+        return False
     lowered = text.lower()
     return not any(word in lowered for word in BANNED)
 
@@ -130,7 +134,7 @@ def _call_openrouter(messages: list[dict]) -> str:
         response = httpx.post(
             OPENROUTER_URL,
             headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-            json={"model": model, "messages": messages, "temperature": 0, "max_tokens": 120},
+            json={"model": model, "messages": messages, "temperature": 0, "max_tokens": 300},
             timeout=TIMEOUT_S,
         )
         response.raise_for_status()
