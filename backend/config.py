@@ -51,6 +51,12 @@ def get_llm_reasoning() -> bool:
     return (_get("LLM_REASONING") or "off").lower() in ("on", "true", "1", "yes")
 
 
+def get_mock_chat() -> str | None:
+    """LLM_MOCK_CHAT picks a chat fixture in mock mode: auto (default), normal,
+    offer, malformed, overlong, banned."""
+    return _get("LLM_MOCK_CHAT")
+
+
 def get_llm_max_calls() -> int:
     raw = _get("LLM_MAX_CALLS")
     try:

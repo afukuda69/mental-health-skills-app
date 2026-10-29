@@ -10,8 +10,10 @@ const props = defineProps({
   entryChoice: { type: String, default: null },
   setupMs: { type: Number, required: true },
   crisisOpen: { type: Boolean, default: false },
+  // Profile preference: true/false, or null to follow prefers-reduced-motion.
+  animatePref: { type: Boolean, default: null },
 })
-const emit = defineEmits(['finished', 'stopped'])
+const emit = defineEmits(['finished', 'stopped', 'animate-change'])
 
 const skill = SKILLS.breathing
 const PLANNED_MS = plannedMs(skill)
@@ -20,7 +22,8 @@ const paused = ref(false)
 const introEnd = ref(null)
 const pos = ref(breathingPosition(skill, 0, null))
 const closingText = ref(null)
-// "Animate circle" is a user control that starts from prefers-reduced-motion.
+// "Animate circle" is a user control that starts from the profile preference,
+// or from prefers-reduced-motion when the profile has none. Changing it saves it.
 // With it off the circle stays still and the "Breathe in / Breathe out" label
 // carries the pace. No seconds countdown (D6: a ticking number reads as demand).
 const animate = ref(true)
@@ -95,7 +98,7 @@ watch(
 )
 
 onMounted(() => {
-  animate.value = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  animate.value = props.animatePref ?? !window.matchMedia('(prefers-reduced-motion: reduce)').matches
   session.begin()
   frame = requestAnimationFrame(tick)
 })
@@ -152,7 +155,7 @@ const circleStyle = computed(() =>
 
     <label class="card toggle">
       <span>Animate circle</span>
-      <input v-model="animate" type="checkbox" role="switch" />
+      <input v-model="animate" type="checkbox" role="switch" @change="emit('animate-change', animate)" />
     </label>
     <p class="notes muted small">
       Stop exercise is always available. Opening Crisis pauses the timer.<br />

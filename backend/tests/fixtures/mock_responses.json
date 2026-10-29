@@ -12,5 +12,13 @@
   "reframe": {
     "ok": "Another way to see it: it may not be as certain as it feels.",
     "malformed": "Great work! Have you considered talking to a therapist about this?"
+  },
+  "chat": {
+    "_note": "Fictional chat replies. <<HELLO>>, <<USUAL>>, <<USUAL_ID>> are filled from the profile summary. normal and offer pass check_chat_output; the rest must fail it.",
+    "normal": "{\"reply\": \"<<HELLO>>Your usual skill here is <<USUAL>>. I can explain it or either of the other two skills. What would you like to look at?\", \"offer_skill\": null}",
+    "offer": "{\"reply\": \"<<HELLO>>For a moment like that, your usual skill, <<USUAL>>, may fit. You can start it below, or choose another.\", \"offer_skill\": \"<<USUAL_ID>>\"}",
+    "malformed": "Sure, here is a reply: {reply: breathing helps",
+    "overlong": "{\"reply\": \"This reply keeps going well past the sixty word limit that the chat validator enforces on every model answer. This reply keeps going well past the sixty word limit that the chat validator enforces on every model answer. This reply keeps going well past the sixty word limit that the chat validator enforces on every model answer. This reply keeps going well past the sixty word limit that the chat validator enforces on every model answer.\", \"offer_skill\": null}",
+    "banned": "{\"reply\": \"That sounds like an anxiety disorder, and therapy could help with it.\", \"offer_skill\": null}"
   }
 }

@@ -170,7 +170,9 @@ button {
 }
 button:focus-visible,
 a:focus-visible,
-input:focus-visible {
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
@@ -182,6 +184,28 @@ button.primary {
 }
 button.primary:hover {
   background: var(--accent-hover);
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+input[type='text'],
+select,
+textarea {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 button.danger-soft {
   background: var(--crisis-bg);

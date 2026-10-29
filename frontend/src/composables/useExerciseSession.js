@@ -1,16 +1,22 @@
 // Session bookkeeping shared by every skill component: the exercise clock,
-// the session record, and recording "left" when the page is hidden or closed.
-import { onMounted, onUnmounted, ref } from 'vue'
+// the session record, crisis-panel pausing, and recording "left" when the
+// page is hidden or closed, or the user navigates away mid-exercise.
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { beacon, send } from '../api.js'
 import { createExerciseClock } from '../timing.js'
 
-export function useExerciseSession({ skill, entryChoice, setupMs, plannedMs, stepsPlanned, onHidden }) {
+export function useExerciseSession({ skill, entryChoice, setupMs, plannedMs, stepsPlanned, crisisOpen, onHidden }) {
   const clientId = crypto.randomUUID()
   const clock = createExerciseClock()
   const ended = ref(false)
+  let begun = false
   let stepsDone = 0
 
+  // Opening the crisis panel pauses the exercise; closing resumes it at the same point.
+  if (crisisOpen) watch(crisisOpen, (open) => (open ? clock.hold('crisis') : clock.release('crisis')))
+
   function begin() {
+    begun = true
     clock.start()
     console.log(`[timing] setup_ms=${Math.round(setupMs)} (entry and skill pick, reported separately)`)
     send('/sessions', {
@@ -60,6 +66,8 @@ export function useExerciseSession({ skill, entryChoice, setupMs, plannedMs, ste
   onUnmounted(() => {
     window.removeEventListener('pagehide', onPageHidden)
     document.removeEventListener('visibilitychange', onVisibility)
+    // Navigating to another tab or back to Activities mid-exercise is leaving.
+    if (begun && !ended.value) end('left')
   })
 
   return { clientId, clock, ended, begin, end, setStepsCompleted }

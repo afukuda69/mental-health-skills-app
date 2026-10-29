@@ -1,0 +1,23 @@
+{
+  "_note": "One-line skill descriptions shared by the frontend (labels, cards) and the backend (chat context). Step text and timings live in frontend/src/content/skills.js.",
+  "skills": [
+    {
+      "id": "breathing",
+      "label": "Paced breathing",
+      "purpose": "Breathe in for 4 seconds and out for 6, seven times, following a circle.",
+      "effort": "Low effort"
+    },
+    {
+      "id": "stop",
+      "label": "STOP",
+      "purpose": "Pause, step back, notice, then choose what to do next, one short prompt at a time.",
+      "effort": "Low effort"
+    },
+    {
+      "id": "reframe",
+      "label": "Cognitive reframe",
+      "purpose": "Write down one thought, what supports it, and another way to see it. Typing is optional.",
+      "effort": "More thinking"
+    }
+  ]
+}

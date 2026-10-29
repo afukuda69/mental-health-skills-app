@@ -17,6 +17,7 @@ section e):
 
 import json
 import logging
+import re
 import threading
 import time
 from concurrent.futures import Future
@@ -209,31 +210,173 @@ def _effective_mode() -> str:
     return mode
 
 
-def acknowledge(skill: str, context: dict) -> AckResult:
-    """Return text to show in the acknowledgment slot. Never raises."""
-    global _live_calls
-    fallback = FALLBACKS.get(skill, FALLBACKS["breathing"])
-    mode = _effective_mode()
+def _invoke(mode: str, live_messages: list[dict], mock_fn, *mock_args) -> tuple[str | None, str | None, int]:
+    """Run one model call (live or mock) under the 5 s wall-clock limit.
 
+    Returns (raw_text, failure_status, latency_ms). failure_status is None on
+    success, else "timeout" or "error". Never raises.
+    """
+    global _live_calls
     if mode == "live":
         _live_calls += 1
-        future = _run_in_thread(_call_openrouter, build_messages(skill, context))
+        future = _run_in_thread(_call_openrouter, live_messages)
     else:
-        future = _run_in_thread(_mock_reply, skill, context, mode)
-
+        future = _run_in_thread(mock_fn, *mock_args)
     started = time.perf_counter()
     try:
         raw = future.result(timeout=TIMEOUT_S)
     except (FutureTimeout, LLMDeadlineError):
         log.warning("model call timed out after %.1f s (mode=%s)", TIMEOUT_S, mode)
-        return AckResult(fallback, "timeout", int((time.perf_counter() - started) * 1000), "fallback")
+        return None, "timeout", int((time.perf_counter() - started) * 1000)
     except Exception as exc:  # any failure must fall back, never surface
         log.warning("model call failed (mode=%s): %s", mode, type(exc).__name__)
-        return AckResult(fallback, "error", int((time.perf_counter() - started) * 1000), "fallback")
-    latency_ms = int((time.perf_counter() - started) * 1000)
+        return None, "error", int((time.perf_counter() - started) * 1000)
+    return raw, None, int((time.perf_counter() - started) * 1000)
+
+
+def acknowledge(skill: str, context: dict) -> AckResult:
+    """Return text to show in the acknowledgment slot. Never raises."""
+    fallback = FALLBACKS.get(skill, FALLBACKS["breathing"])
+    mode = _effective_mode()
+    raw, failure, latency_ms = _invoke(mode, build_messages(skill, context), _mock_reply, skill, context, mode)
+    if failure:
+        return AckResult(fallback, failure, latency_ms, "fallback")
 
     text = (raw or "").strip()
     if not check_output(text):
         log.info("model output rejected by check_output (mode=%s)", mode)
         return AckResult(fallback, "fallback", latency_ms, "fallback")
     return AckResult(text, "ok" if mode == "live" else "mock", latency_ms, "model")
+
+
+# --- "Talk it through" chat -------------------------------------------------
+
+CHAT_MAX_WORDS = 60
+OFFERABLE = {"breathing", "stop", "reframe"}
+
+# Shown when the chat model fails, times out, returns unusable output, or the
+# call cap is reached. The frontend adds links to the three skills under it.
+CHAT_FALLBACK = (
+    "I can't give a useful reply to that here. This is a coursework prototype and can't assess anything. "
+    "You can try one of the skills below."
+)
+
+# Separate from BANNED: the chat may ask questions and explain the skills, but
+# must not diagnose, prescribe, cheer, or claim to monitor or remember anyone.
+CHAT_BANNED = [
+    "diagnos", "disorder", "therapy", "therapist", "treatment", "symptom", "clinical",
+    "medication", "you should", "you must", "great job", "well done", "amazing",
+    "proud of you", "i'm always here", "i am always here", "i remember", "watching over",
+    "monitor", "i will keep track",
+]
+
+CHAT_SYSTEM_PROMPT = (
+    "You are the optional chat in a coursework prototype app that guides three short self-guided skills. "
+    "This is not therapy, diagnosis, or a support service, and nobody monitors it. Users are asked to use fictional scenarios. "
+    "Answer in plain, calm, non-clinical language, at most 60 words. You may ask one short question. "
+    "Only describe the three skills as given below. Never invent techniques, add steps, or change their steps or timing. "
+    "Never diagnose, never mention disorders, therapy, or medication, never praise or cheer, never use exclamation marks, "
+    "and never claim to remember, watch over, or monitor the user. "
+    "If one skill fits what the user describes, you may offer it; the user decides. "
+    'Reply with JSON only: {"reply": "<text>", "offer_skill": "breathing" | "stop" | "reframe" | null}.'
+)
+
+
+@dataclass
+class ChatResult:
+    reply: str
+    offer_skill: str | None
+    status: str  # ok | mock | fallback | error | timeout
+    latency_ms: int | None
+    role: str  # model | fallback
+
+
+def check_chat_output(raw: str | None) -> tuple[str, str | None] | None:
+    """Parse and validate a chat reply. Returns (reply, offer_skill) or None."""
+    if not raw:
+        return None
+    text = raw.strip()
+    if text.startswith("```"):
+        text = text.strip("`").removeprefix("json").strip()
+    try:
+        data = json.loads(text)
+    except ValueError:
+        return None
+    if not isinstance(data, dict) or not isinstance(data.get("reply"), str):
+        return None
+    reply = data["reply"].strip()
+    offer = data.get("offer_skill")
+    if offer not in OFFERABLE and offer is not None:
+        return None
+    if not reply or len(reply.split()) > CHAT_MAX_WORDS or "!" in reply:
+        return None
+    if not reply.rstrip("\"'").endswith((".", "?")):
+        return None  # likely cut off by the token limit
+    lowered = reply.lower()
+    if any(word in lowered for word in CHAT_BANNED):
+        return None
+    return reply, offer
+
+
+def build_chat_messages(skills: list[dict], profile_summary: str, recent: list[dict]) -> list[dict]:
+    """System prompt + skill lines + profile summary + the last 10 messages of this conversation."""
+    skill_lines = "\n".join(f"- {s['id']}: {s['label']}. {s['purpose']}" for s in skills)
+    context = (
+        f"The three skills:\n{skill_lines}\n\n"
+        f"About this user, from the local profile (no message text): {profile_summary or 'nothing yet'}"
+    )
+    messages = [
+        {"role": "system", "content": CHAT_SYSTEM_PROMPT},
+        {"role": "system", "content": context},
+    ]
+    for m in recent[-10:]:
+        messages.append({"role": "user" if m["role"] == "user" else "assistant", "content": m["text"]})
+    return messages
+
+
+def _mock_chat(messages: list[dict], mode: str) -> str:
+    fixtures = _load_fixtures()["chat"]
+    if mode == "mock_error":
+        raise LLMRequestError("Simulated model error (LLM_MODE=mock_error)")
+    if mode == "mock_timeout":
+        time.sleep(TIMEOUT_S + 1.0)
+        return fixtures["normal"]
+    if mode == "mock_malformed":
+        return fixtures["malformed"]
+    choice = (config.get_mock_chat() or "auto").lower()
+    if choice not in fixtures or choice == "_note":
+        last = messages[-1]["content"].lower() if messages else ""
+        if any(k in last for k in ("diagnos", "do i have", "anxiety", "depress", "disorder")):
+            choice = "banned"  # the validator rejects it, so the limit fallback shows
+        elif any(k in last for k in ("presentation", "nervous", "exam", "help", "suggest", "what should")):
+            choice = "offer"
+        else:
+            choice = "normal"
+    return _tailor(fixtures[choice], messages)
+
+
+def _tailor(raw: str, messages: list[dict]) -> str:
+    """Fill a mock reply with the name and usual skill from the profile summary,
+    so mock mode shows the same tailoring a live model is asked for."""
+    context = messages[1]["content"] if len(messages) > 1 else ""
+    name = re.search(r"Name: (?!not given)([^.]+)\.", context)
+    usual = re.search(r"Usual skill: (.+?) \[(\w+)\]", context)
+    return (
+        raw.replace("<<HELLO>>", f"Hi {name.group(1)}. " if name else "")
+        .replace("<<USUAL>>", usual.group(1) if usual else "Paced breathing")
+        .replace("<<USUAL_ID>>", usual.group(2) if usual else "breathing")
+    )
+
+
+def chat_reply(messages: list[dict]) -> ChatResult:
+    """One chat turn. Never raises; any failure gives CHAT_FALLBACK."""
+    mode = _effective_mode()
+    raw, failure, latency_ms = _invoke(mode, messages, _mock_chat, messages, mode)
+    if failure:
+        return ChatResult(CHAT_FALLBACK, None, failure, latency_ms, "fallback")
+    parsed = check_chat_output(raw)
+    if parsed is None:
+        log.info("chat output rejected by check_chat_output (mode=%s)", mode)
+        return ChatResult(CHAT_FALLBACK, None, "fallback", latency_ms, "fallback")
+    reply, offer = parsed
+    return ChatResult(reply, offer, "ok" if mode == "live" else "mock", latency_ms, "model")

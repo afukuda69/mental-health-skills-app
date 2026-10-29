@@ -159,7 +159,7 @@ def get_history(limit: int = 50) -> list[dict]:
     try:
         rows = conn.execute(
             "SELECT s.id, s.client_id, s.skill, s.started_at, s.ended_at, s.end_reason, "
-            "s.measured_ms, f.rating "
+            "s.measured_ms, s.planned_ms, s.steps_planned, s.steps_completed, f.rating "
             "FROM sessions s LEFT JOIN feedback f ON f.session_id = s.id "
             "ORDER BY s.id DESC LIMIT ?",
             (limit,),
@@ -168,7 +168,7 @@ def get_history(limit: int = 50) -> list[dict]:
         for row in rows:
             messages = conn.execute(
                 "SELECT role, text, model_status, created_at FROM messages "
-                "WHERE session_id = ? AND role != 'user' ORDER BY id",
+                "WHERE session_id = ? AND role != 'user' AND text IS NOT NULL ORDER BY id",
                 (row["id"],),
             ).fetchall()
             item = dict(row)
@@ -231,16 +231,49 @@ def acknowledge_session(client_id: str) -> dict:
     return {"text": result.text, "status": result.status, "latency_ms": result.latency_ms, "crisis": False}
 
 
-def submit_text(client_id: str, text: str) -> dict:
-    """Typed text (the reframe in Part 3.3). The crisis check runs first; on
-    a match there is no model call, the typed text is not stored, and a
-    scripted reply is saved with crisis_flag = 1."""
+def reflect(client_id: str, text: str) -> dict:
+    """Reframe step 4: the model reflects the user's step-3 answer back.
+
+    The crisis check runs first; on a match there is no model call and a
+    scripted reply is returned. Nothing the user typed is stored, and neither
+    is the reflection (it echoes the user's words): the saved rows keep only
+    the role, model_status, latency, and crisis flag.
+    """
     session = _require_open_session(client_id)
     if crisis.matches_crisis_phrase(text):
-        add_message(session["id"], "user", None, None, None, crisis_flag=True)
-        add_message(session["id"], "scripted", crisis.SCRIPTED_REPLY, "scripted", None, crisis_flag=True)
+        add_message(session["id"], "scripted", None, "scripted", None, crisis_flag=True)
         return {"text": crisis.SCRIPTED_REPLY, "status": "scripted", "latency_ms": None, "crisis": True}
-    add_message(session["id"], "user", text)
     result = model_client.acknowledge("reframe", {"text": text})
-    add_message(session["id"], result.role, result.text, result.status, result.latency_ms)
+    add_message(session["id"], result.role, None, result.status, result.latency_ms)
     return {"text": result.text, "status": result.status, "latency_ms": result.latency_ms, "crisis": False}
+
+
+SKILL_NAMES = {"breathing": "breathing", "stop": "STOP", "reframe": "reframe"}
+
+
+def history_summary() -> str:
+    """Counts only, e.g. "breathing x3 completed, STOP x1 stopped".
+    Never includes message, reflection, or chat text."""
+    conn = db.get_connection()
+    try:
+        rows = conn.execute(
+            "SELECT skill, end_reason, COUNT(*) AS n FROM sessions WHERE end_reason IS NOT NULL "
+            "GROUP BY skill, end_reason ORDER BY skill, end_reason"
+        ).fetchall()
+    finally:
+        conn.close()
+    return ", ".join(f"{SKILL_NAMES.get(r['skill'], r['skill'])} x{r['n']} {r['end_reason']}" for r in rows)
+
+
+def delete_all_history() -> dict:
+    """Remove every session, message, feedback row, and conversation."""
+    conn = db.get_connection()
+    try:
+        counts = {t: conn.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0] for t in ("sessions", "messages", "feedback", "conversations")}
+        conn.execute("DELETE FROM profile")
+        for table in ("feedback", "messages", "sessions", "conversations"):
+            conn.execute(f"DELETE FROM {table}")
+        conn.commit()
+        return counts
+    finally:
+        conn.close()

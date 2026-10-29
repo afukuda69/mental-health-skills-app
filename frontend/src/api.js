@@ -37,6 +37,29 @@ export async function getJSON(path, timeoutMs = 4000) {
   }
 }
 
+// Reframe step 4. Only the step-3 answer is passed here; steps 1-2 never
+// leave the component. The backend stores neither the text nor the reply.
+// Resolves to null on any failure, and the caller shows the fixed fallback.
+export async function requestReflection(clientId, text, timeoutMs = 6500) {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const res = await fetch(`${BASE}/sessions/${clientId}/reflection`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+      signal: controller.signal,
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    return typeof data.text === 'string' ? data : null
+  } catch {
+    return null
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 // The backend enforces the 5 s model timeout. This client-side limit is a
 // backstop for a slow or unreachable backend. Resolves to null on any failure,
 // and the caller shows the fixed fallback text.
@@ -57,3 +80,33 @@ export async function requestAcknowledgment(clientId, timeoutMs = 6500) {
     clearTimeout(timer)
   }
 }
+
+// "Talk it through". These are awaited by the chat screen only; no exercise
+// waits on them. Errors throw so the chat can show a neutral notice.
+async function requestJSON(path, { method = 'GET', body, timeoutMs = 8000 } = {}) {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const res = await fetch(BASE + path, {
+      method,
+      headers: body ? { 'Content-Type': 'application/json' } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    return await res.json()
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+export const listConversations = () => requestJSON('/conversations').then((d) => d.conversations)
+export const createConversation = () => requestJSON('/conversations', { method: 'POST' })
+export const getConversationMessages = (id) => requestJSON(`/conversations/${id}/messages`).then((d) => d.messages)
+export const sendChatMessage = (id, text) => requestJSON(`/conversations/${id}/messages`, { method: 'POST', body: { text } })
+export const deleteAllHistory = () => requestJSON('/history', { method: 'DELETE' })
+
+// The one local profile.
+export const getProfile = () => requestJSON('/profile')
+export const updateProfile = (changes) => requestJSON('/profile', { method: 'POST', body: changes })
+export const resetProfile = () => requestJSON('/profile/reset', { method: 'POST' })

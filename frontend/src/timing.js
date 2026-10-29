@@ -3,8 +3,12 @@
 // time are tracked separately). No DOM, so vitest can run them directly.
 
 export function plannedMs(skill) {
+  if (skill.kind === 'steps') return skill.steps.reduce((sum, s) => sum + s.stepMs, 0)
   return skill.introMs + skill.cycles * (skill.inMs + skill.outMs)
 }
+
+// Next works only after this much active time on a step (STOP, reframe).
+export const MIN_STEP_MS = 2000
 
 export const plannedSeconds = (skill) => Math.round(plannedMs(skill) / 1000)
 

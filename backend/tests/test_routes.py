@@ -69,27 +69,32 @@ def test_no_model_call_after_stop(client):
     ack.assert_not_called()
 
 
-def test_conversation_messages_persist(client):
+def test_reframe_reflection_stores_no_text(client):
     _start(client, skill="reframe")
-    data = client.post("/api/sessions/r1/messages", json={"text": "Fictional: the meeting might go fine"}).json()
-    assert data["crisis"] is False
-    msgs = rows("SELECT role, text, model_status FROM messages ORDER BY id")
-    assert msgs[0] == {"role": "user", "text": "Fictional: the meeting might go fine", "model_status": None}
-    assert msgs[1]["role"] == "model" and msgs[1]["model_status"] == "mock"
+    data = client.post("/api/sessions/r1/reflection", json={"text": "Fictional: the meeting might go fine"}).json()
+    assert data["crisis"] is False and data["status"] == "mock"
+    assert data["text"] == "Another way to see it: it may not be as certain as it feels."
+    msgs = rows("SELECT role, text, model_status, crisis_flag FROM messages")
+    assert msgs == [{"role": "model", "text": None, "model_status": "mock", "crisis_flag": 0}]
+    assert "meeting" not in str(rows("SELECT * FROM messages"))
+
+
+def test_reframe_reflection_sends_only_the_given_text_to_the_model(client):
+    _start(client, skill="reframe")
+    with patch.object(model_client, "acknowledge", wraps=model_client.acknowledge) as ack:
+        client.post("/api/sessions/r1/reflection", json={"text": "Fictional: maybe it went fine"})
+    assert ack.call_args.args == ("reframe", {"text": "Fictional: maybe it went fine"})
 
 
 def test_crisis_phrase_scripted_reply_without_model_call(client):
     _start(client, skill="reframe")
     with patch.object(model_client, "acknowledge") as ack, patch.object(model_client, "_call_openrouter") as live:
-        data = client.post("/api/sessions/r1/messages", json={"text": "Fictional test: I want to die"}).json()
+        data = client.post("/api/sessions/r1/reflection", json={"text": "Fictional test: I want to die"}).json()
     ack.assert_not_called()
     live.assert_not_called()
     assert data == {"text": crisis.SCRIPTED_REPLY, "status": "scripted", "latency_ms": None, "crisis": True}
     msgs = rows("SELECT role, text, model_status, crisis_flag FROM messages ORDER BY id")
-    assert msgs == [
-        {"role": "user", "text": None, "model_status": None, "crisis_flag": 1},  # typed text not stored
-        {"role": "scripted", "text": crisis.SCRIPTED_REPLY, "model_status": "scripted", "crisis_flag": 1},
-    ]
+    assert msgs == [{"role": "scripted", "text": None, "model_status": "scripted", "crisis_flag": 1}]
 
 
 def test_history_and_usual(client):
@@ -101,7 +106,7 @@ def test_history_and_usual(client):
     (item,) = client.get("/api/history").json()["sessions"]
     assert item["end_reason"] == "completed" and item["rating"] == "helped"
     assert item["messages"][0]["role"] == "model"
-    assert client.get("/api/usual").json() == {"skill": "breathing"}
+    assert client.get("/api/usual").json() == {"skill": "breathing", "source": "learned"}
 
 
 def test_feedback_validation(client):

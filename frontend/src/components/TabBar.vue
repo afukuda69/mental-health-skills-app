@@ -1,5 +1,5 @@
 <script setup>
-// Bottom navigation: only the screens 3.2 has. The Crisis tab is CrisisButton,
+// Bottom navigation: Home, Activities, Chat, Profile (with History inside), Crisis. The Crisis tab is CrisisButton,
 // which imports only static content, so it works with the backend down.
 // While an exercise runs, the bar contracts to the Crisis tab alone (D1).
 import AppIcon from './AppIcon.vue'
@@ -13,7 +13,9 @@ defineEmits(['navigate', 'crisis'])
 
 const TABS = [
   { id: 'home', label: 'Home', icon: 'home' },
-  { id: 'history', label: 'History', icon: 'history' },
+  { id: 'activities', label: 'Activities', icon: 'activities' },
+  { id: 'chat', label: 'Chat', icon: 'chat' },
+  { id: 'profile', label: 'Profile', icon: 'profile' },
 ]
 </script>
 
@@ -76,7 +78,7 @@ const TABS = [
 .icon {
   display: grid;
   place-items: center;
-  width: 52px;
+  width: 44px;
   height: 30px;
   border-radius: 999px;
 }

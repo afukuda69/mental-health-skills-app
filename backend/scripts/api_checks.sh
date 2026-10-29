@@ -24,10 +24,10 @@ case "${1:-mock}" in
     curl -s -X POST "$API/sessions/demo-left/end" -H 'Content-Type: text/plain' -d '{"end_reason":"left","measured_ms":31877,"pauses_ms":0,"crisis_ms":0,"steps_completed":2}' | cut -c1-200; echo
     echo "## Crisis phrase in typed text (fictional): scripted reply, no model call"
     start demo-crisis reframe okay
-    j /sessions/demo-crisis/messages '{"text":"Fictional test phrase: I want to die"}'
-    echo "## Ordinary typed text (fictional): stored, model reply"
+    j /sessions/demo-crisis/reflection '{"text":"Fictional test phrase: I want to die"}'
+    echo "## Reframe step-3 text (fictional): model reflection, no text stored"
     start demo-text reframe okay
-    j /sessions/demo-text/messages '{"text":"Fictional: the presentation might go fine"}'
+    j /sessions/demo-text/reflection '{"text":"Fictional: the presentation might go fine"}'
     echo "## GET /api/usual"; curl -s "$API/usual"; echo
     ;;
   ack)

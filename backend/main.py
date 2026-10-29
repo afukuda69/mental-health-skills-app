@@ -9,7 +9,9 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+import chat
 import db
+import profile
 import sessions
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
@@ -28,7 +30,7 @@ app = FastAPI(title="Mental Health Skills Prototype", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
-    allow_methods=["GET", "POST"],
+    allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["Content-Type"],
 )
 
@@ -97,10 +99,10 @@ def acknowledgment(client_id: str):
         raise HTTPException(status_code=409, detail="Session was stopped")
 
 
-@app.post("/api/sessions/{client_id}/messages")
-def message(client_id: str, payload: TextIn):
+@app.post("/api/sessions/{client_id}/reflection")
+def reflection(client_id: str, payload: TextIn):
     try:
-        return sessions.submit_text(client_id, payload.text)
+        return sessions.reflect(client_id, payload.text)
     except sessions.SessionNotFound:
         raise HTTPException(status_code=404, detail="Unknown session")
     except sessions.SessionStopped:
@@ -120,9 +122,67 @@ def feedback(client_id: str, payload: FeedbackIn):
 
 @app.get("/api/history")
 def history():
-    return {"sessions": sessions.get_history()}
+    return {"sessions": sessions.get_history(), "conversations": chat.list_conversations()}
+
+
+@app.delete("/api/history")
+def delete_history():
+    return {"deleted": sessions.delete_all_history()}
+
+
+@app.post("/api/conversations")
+def create_conversation():
+    return chat.create_conversation()
+
+
+@app.get("/api/conversations")
+def list_conversations():
+    return {"conversations": chat.list_conversations()}
+
+
+@app.get("/api/conversations/{conversation_id}/messages")
+def conversation_messages(conversation_id: int):
+    try:
+        return {"messages": chat.get_messages(conversation_id)}
+    except chat.ConversationNotFound:
+        raise HTTPException(status_code=404, detail="Unknown conversation")
+
+
+@app.post("/api/conversations/{conversation_id}/messages")
+def send_chat_message(conversation_id: int, payload: TextIn):
+    try:
+        return chat.send_message(conversation_id, payload.text)
+    except chat.ConversationNotFound:
+        raise HTTPException(status_code=404, detail="Unknown conversation")
 
 
 @app.get("/api/usual")
 def usual():
-    return {"skill": sessions.get_usual_skill()}
+    p = profile.get_profile()
+    return {"skill": p["usual_skill"], "source": p["usual_source"]}
+
+
+class ProfileIn(BaseModel):
+    model_config = {"extra": "forbid"}
+    display_name: str | None = Field(default=None, max_length=40)
+    usual_skill: str | None = None
+    animate_circle: bool | None = None
+    last_checkin: str | None = None
+
+
+@app.get("/api/profile")
+def get_profile():
+    return profile.get_profile()
+
+
+@app.post("/api/profile")
+def update_profile(payload: ProfileIn):
+    try:
+        return profile.update_profile(payload.model_dump(exclude_unset=True))
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@app.post("/api/profile/reset")
+def reset_profile():
+    return profile.reset_to_learned()

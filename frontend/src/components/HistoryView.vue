@@ -1,69 +1,82 @@
 <script setup>
-// One card per session, newest first: skill, date, status, active and planned
-// time, and how it ended, in neutral wording. No totals, streaks, or scores
-// (D6). The saved acknowledgment text is shown only on a deliberate tap;
-// typed text is never shown (design.md section g).
+// History, shown inside Profile: one compact row per session (status dot,
+// active vs planned time) and one per conversation (tap to open). No totals,
+// streaks, or scores (D6). Saved acknowledgment text only on a deliberate tap;
+// typed reframe text is never stored.
 import { onMounted, reactive, ref } from 'vue'
 import { getJSON } from '../api.js'
 import { SKILLS } from '../content/skills.js'
 import { plannedMs } from '../timing.js'
 
-defineEmits(['navigate'])
+const props = defineProps({ refreshKey: { type: Number, default: 0 } })
+const emit = defineEmits(['open-conversation'])
 
 const state = ref('loading')
 const sessions = ref([])
+const conversations = ref([])
 const open = reactive({})
 
 const STATUS = { completed: 'Completed', stopped: 'Stopped', left: 'Left' }
-const ENDED = {
-  completed: 'Finished all seven cycles',
-  stopped: 'Stopped with Stop exercise',
-  left: 'Left the page',
-}
+const ENDED = { completed: 'Finished every step', stopped: 'Stopped with Stop exercise', left: 'Left the exercise' }
 
-const fmt = (iso) => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
+const fmt = (iso) => new Date(iso).toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' })
 const seconds = (ms) => (ms == null ? '—' : `${(ms / 1000).toFixed(1)} s`)
-// The planned time comes from the schedule in content/skills.js, as in the session record.
-const planned = (s) => (SKILLS[s.skill]?.cycles ? plannedMs(SKILLS[s.skill]) : null)
+const planned = (s) => s.planned_ms ?? (SKILLS[s.skill] ? plannedMs(SKILLS[s.skill]) : null)
 
-onMounted(async () => {
+async function load() {
   try {
-    sessions.value = (await getJSON('/history')).sessions
+    const data = await getJSON('/history')
+    sessions.value = data.sessions
+    conversations.value = data.conversations ?? []
     state.value = 'ready'
   } catch {
     state.value = 'error'
   }
-})
+}
+onMounted(load)
+defineExpose({ load, refreshKey: props.refreshKey })
 </script>
 
 <template>
-  <main class="screen history">
-    <h1>History</h1>
+  <section class="history" aria-labelledby="history-title">
+    <h2 id="history-title">History</h2>
     <p v-if="state === 'loading'" class="muted">Loading</p>
     <p v-else-if="state === 'error'" class="muted">History can't be loaded right now.</p>
-    <p v-else-if="sessions.length === 0" class="muted">No sessions yet.</p>
-    <ul v-else class="list">
-      <li v-for="s in sessions" :key="s.id" class="row">
-        <div class="line">
-          <span class="dot" :class="s.end_reason ?? 'none'" aria-hidden="true"></span>
-          <strong class="status">{{ STATUS[s.end_reason] ?? 'Not finished' }}</strong>
-          <span class="skill">{{ SKILLS[s.skill]?.label ?? s.skill }}</span>
-          <span class="muted when">{{ fmt(s.started_at) }}</span>
+    <p v-else-if="sessions.length === 0 && conversations.length === 0" class="muted">Nothing saved yet.</p>
+    <template v-else>
+      <ul v-if="sessions.length" class="list">
+        <li v-for="s in sessions" :key="s.id" class="row">
+          <div class="line">
+            <span class="dot" :class="s.end_reason ?? 'none'" aria-hidden="true"></span>
+            <strong>{{ STATUS[s.end_reason] ?? 'Not finished' }}</strong>
+            <span>{{ SKILLS[s.skill]?.label ?? s.skill }}</span>
+            <span class="muted when">{{ fmt(s.started_at) }}</span>
+          </div>
+          <p class="muted detail">
+            Active {{ seconds(s.measured_ms) }} of {{ seconds(planned(s)) }} planned · {{ ENDED[s.end_reason] ?? 'No end was recorded' }}
+          </p>
+          <button v-if="s.messages.length" type="button" class="link" @click="open[s.id] = !open[s.id]">
+            {{ open[s.id] ? 'Hide message' : 'Show message' }}
+          </button>
+          <p v-for="(m, i) in open[s.id] ? s.messages : []" :key="i" class="muted message">{{ m.text }}</p>
+        </li>
+      </ul>
+      <template v-if="conversations.length">
+        <p class="section-label">Conversations</p>
+        <div class="list">
+          <button v-for="c in conversations" :key="c.id" type="button" class="list-row" @click="emit('open-conversation', c.id)">
+            <span><span class="title">{{ c.first_line ?? 'Conversation' }}</span><span class="sub">{{ fmt(c.created_at) }} · {{ c.message_count }} messages</span></span>
+          </button>
         </div>
-        <p class="muted detail">
-          Active {{ seconds(s.measured_ms) }} of {{ seconds(planned(s)) }} planned · {{ ENDED[s.end_reason] ?? 'No end was recorded' }}
-        </p>
-        <button v-if="s.messages.length" type="button" class="link" @click="open[s.id] = !open[s.id]">
-          {{ open[s.id] ? 'Hide message' : 'Show message' }}
-        </button>
-        <p v-for="(m, i) in open[s.id] ? s.messages : []" :key="i" class="muted message">{{ m.text }}</p>
-      </li>
-    </ul>
-    <button type="button" class="link back" @click="$emit('navigate', 'home')">Back to start</button>
-  </main>
+      </template>
+    </template>
+  </section>
 </template>
 
 <style scoped>
+.history {
+  margin-top: 28px;
+}
 .list {
   list-style: none;
   margin: 0;
@@ -111,8 +124,5 @@ onMounted(async () => {
 }
 .row .link {
   margin-left: 14px;
-}
-.back {
-  margin-top: 16px;
 }
 </style>

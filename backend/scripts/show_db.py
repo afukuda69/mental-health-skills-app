@@ -14,8 +14,9 @@ QUERIES = {
     "sessions": "SELECT id, client_id, skill, entry_choice, end_reason, completed, exited_early, "
     "setup_ms, planned_ms, measured_ms, pauses_ms, crisis_ms, steps_planned, steps_completed, "
     "started_at, ended_at FROM sessions ORDER BY id",
-    "messages": "SELECT id, session_id, role, text, model_status, latency_ms, crisis_flag, created_at "
-    "FROM messages ORDER BY id",
+    "messages": "SELECT id, session_id, conversation_id, role, text, model_status, latency_ms, crisis_flag, "
+    "offer_skill, created_at FROM messages ORDER BY id",
+    "conversations": "SELECT id, created_at, updated_at FROM conversations ORDER BY id",
     "feedback": "SELECT id, session_id, rating FROM feedback ORDER BY id",
 }
 
