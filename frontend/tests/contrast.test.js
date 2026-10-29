@@ -49,6 +49,9 @@ describe('contrast on the baby-blue palette', () => {
     ['status-completed', 'surface'],
     ['status-stopped', 'surface'],
     ['status-left', 'surface'],
+    ['skill-breathing', 'surface'],
+    ['skill-stop', 'surface'],
+    ['skill-reframe', 'surface'],
   ])('--%s is at least 3:1 (non-text) on --%s', (name, bg) => {
     expect(contrast(token(name), token(bg))).toBeGreaterThanOrEqual(3)
   })

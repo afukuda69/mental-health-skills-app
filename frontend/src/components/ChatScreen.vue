@@ -90,7 +90,7 @@ onMounted(async () => {
   <main class="screen chat">
     <!-- Always visible while the chat is open. -->
     <header class="limits" role="note">Coursework skills prototype. Not a therapist. Can't diagnose.</header>
-    <h1>Talk it through</h1>
+    <h1 class="title">Talk it through</h1>
     <p class="muted intro">Optional. Use fictional scenarios only. Nobody monitors this chat.</p>
 
     <label class="picker">
@@ -136,16 +136,21 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+/* A slim bar, always visible while the chat is open. */
 .limits {
   position: sticky;
   top: 0;
   z-index: 5;
-  margin: -20px -20px 16px;
-  padding: 10px 20px;
+  margin: -20px -20px 12px;
+  padding: 6px 20px;
   background: var(--secondary);
   color: var(--accent);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 600;
+}
+.title {
+  font-size: 1.35rem;
+  margin-bottom: 4px;
 }
 .intro {
   margin: -8px 0 16px;
@@ -194,20 +199,21 @@ select {
   flex-direction: column;
   gap: 12px;
 }
+/* No card borders: the user's messages on the right in pale blue, the assistant's on the left in white. */
 .bubble {
-  max-width: 88%;
-  padding: 12px 14px;
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
+  max-width: 85%;
+  padding: 10px 14px;
+  border: 0;
 }
 .bubble.mine {
   align-self: flex-end;
-  background: var(--tint);
-  border-color: var(--secondary);
+  background: var(--secondary);
+  border-radius: 18px 18px 4px 18px;
 }
 .bubble.theirs {
   align-self: flex-start;
   background: var(--surface);
+  border-radius: 18px 18px 18px 4px;
 }
 .who {
   margin: 0 0 4px;

@@ -8,7 +8,6 @@
 import { computed } from 'vue'
 import { APP_NAME, BUTTONS, CHECKIN_LABELS, ENTRY_OPTIONS, ENTRY_PROMPT, FOOTER, SKILLS } from '../content/skills.js'
 import { plannedSeconds } from '../timing.js'
-import AppIcon from './AppIcon.vue'
 
 const props = defineProps({
   profile: { type: Object, default: null },
@@ -26,16 +25,13 @@ const kicker = computed(() => {
   return featuredId.value === usual.value ? 'Your usual' : 'Guided practice'
 })
 const name = computed(() => props.profile?.display_name)
+const others = computed(() => ['breathing', 'stop', 'reframe'].filter((id) => id !== featuredId.value))
 </script>
 
 <template>
-  <header class="topbar">
-    <p class="app-name">{{ APP_NAME }}</p>
-  </header>
-
   <!-- Overwhelmed: as little as possible on screen. -->
   <main v-if="contracted" class="screen contracted">
-    <h1>{{ name ? `Hi, ${name}.` : 'One thing at a time.' }}</h1>
+    <p class="greeting">{{ name ? `Hi, ${name}.` : 'One thing at a time.' }}</p>
     <p class="because">
       Suggested because you chose "{{ CHECKIN_LABELS[checkin] }}".
       <button type="button" class="link" @click="emit('checkin', null)">Change</button>
@@ -45,52 +41,42 @@ const name = computed(() => props.profile?.display_name)
     <button type="button" class="link small" @click="emit('show-everything')">Show everything</button>
   </main>
 
-  <main v-else class="screen">
-    <h1 class="greeting">{{ name ? `Hi, ${name}.` : 'Welcome.' }}</h1>
-
-    <section v-if="!checkin" class="card entry" aria-labelledby="entry-prompt">
-      <p id="entry-prompt" class="entry-title">{{ ENTRY_PROMPT }}</p>
-      <p class="entry-sub">Optional. Your choice changes what is suggested; nothing starts by itself.</p>
-      <div class="entry-options">
-        <button v-for="o in ENTRY_OPTIONS" :key="o.key" type="button" class="chip" @click="emit('checkin', o.key)">
-          {{ o.label }}
-        </button>
+  <main v-else class="screen calm">
+    <!-- Part one: a short greeting line, and the optional check-in. -->
+    <header class="top">
+      <h1 class="greeting">{{ name ? `Hi, ${name}.` : 'Welcome.' }}</h1>
+      <span class="app-name">{{ APP_NAME }}</span>
+    </header>
+    <div v-if="!checkin" class="checkin" role="group" aria-labelledby="entry-prompt">
+      <p id="entry-prompt" class="prompt">{{ ENTRY_PROMPT }} <span class="muted">Optional.</span></p>
+      <div class="options">
+        <button v-for="o in ENTRY_OPTIONS" :key="o.key" type="button" class="opt" @click="emit('checkin', o.key)">{{ o.label }}</button>
       </div>
-    </section>
+    </div>
     <p v-else class="because">
       Suggested because you chose "{{ CHECKIN_LABELS[checkin] }}".
       <button type="button" class="link" @click="emit('checkin', null)">Change</button>
     </p>
 
-    <section class="card tint featured" aria-labelledby="featured-title">
-      <!-- Static decorative circle: no animation (D6). -->
-      <div class="deco" aria-hidden="true"><div class="ball"></div></div>
-      <p class="kicker">{{ kicker }}</p>
+    <!-- Part two: one large Start area for the suggested skill. -->
+    <section class="featured" aria-labelledby="featured-title">
+      <div class="deco" aria-hidden="true"></div>
+      <p class="kicker">{{ kicker }} · {{ plannedSeconds(featured) }} seconds</p>
       <h2 id="featured-title">{{ featured.label }}</h2>
       <p class="purpose">{{ featured.purpose }}</p>
-      <span class="chip duration"><AppIcon name="clock" :size="16" /> {{ plannedSeconds(featured) }} seconds</span>
-      <button type="button" class="primary" @click="emit('start', featured.id)">{{ BUTTONS.openPractice }}</button>
-      <button v-if="usual && usual !== featuredId" type="button" class="link usual" @click="emit('start', usual)">
-        {{ BUTTONS.useUsual }}: {{ SKILLS[usual].label }}
-      </button>
+      <button type="button" class="primary start" :aria-label="`Start ${featured.label}`" @click="emit('start', featured.id)">{{ BUTTONS.start }}</button>
     </section>
 
-    <p class="section-label">More</p>
-    <div class="list">
-      <button type="button" class="list-row" @click="emit('navigate', 'activities')">
-        <span class="icon-tile"><AppIcon name="activities" /></span>
-        <span><span class="title">All activities</span><span class="sub">Every skill, always available</span></span>
-        <AppIcon class="chevron" name="chevron" />
-      </button>
-      <button type="button" class="list-row" @click="emit('navigate', 'chat')">
-        <span class="icon-tile"><AppIcon name="chat" /></span>
-        <span><span class="title">Talk it through</span><span class="sub">Optional chat about a skill</span></span>
-        <AppIcon class="chevron" name="chevron" />
-      </button>
-      <button type="button" class="list-row" @click="emit('navigate', 'profile')">
-        <span class="icon-tile"><AppIcon name="profile" /></span>
-        <span><span class="title">Profile and history</span><span class="sub">What the app remembers, and how to change it</span></span>
-        <AppIcon class="chevron" name="chevron" />
+    <div class="pills" role="group" aria-label="Other skills">
+      <button
+        v-for="id in others"
+        :key="id"
+        type="button"
+        class="pill"
+        :aria-label="id === usual ? `${BUTTONS.useUsual}: ${SKILLS[id].label}` : `Start ${SKILLS[id].label}`"
+        @click="emit('start', id)"
+      >
+        {{ SKILLS[id].label }}<span v-if="id === usual" class="tag"> · your usual</span>
       </button>
     </div>
 
@@ -99,92 +85,124 @@ const name = computed(() => props.profile?.display_name)
 </template>
 
 <style scoped>
-.topbar {
-  padding: 16px 20px 0;
+.calm {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--tabbar-h) - var(--tabbar-gap) * 2 - 8px);
 }
-.app-name {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--accent);
+.top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
 }
 .greeting {
-  font-size: 1.5rem;
-  margin-bottom: 14px;
-}
-.entry {
-  margin-bottom: 16px;
-}
-.entry-title {
   margin: 0;
-  font-weight: 700;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
-.entry-sub {
-  margin: 2px 0 12px;
-  font-size: 0.9rem;
-  color: var(--muted);
+.app-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
 }
-.entry-options {
+.checkin {
+  margin: 14px 0 0;
+}
+.prompt {
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+.options {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
-.entry-options .chip {
-  padding: 8px 12px;
+.opt {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--surface);
   color: var(--text);
   font-weight: 500;
+  font-size: 0.92rem;
 }
 .because {
-  margin: 0 0 14px;
+  margin: 12px 0 0;
   color: var(--muted);
 }
 .because .link {
   padding: 2px 4px;
 }
+/* One large, quiet Start area. */
 .featured {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 24px 22px 18px;
+  margin: 22px 0 16px;
+  padding: 28px 22px;
+  border-radius: 28px;
+  background: var(--tint);
 }
 .deco {
-  width: 128px;
-  height: 128px;
-  border-radius: 50%;
-  border: 1px solid var(--secondary);
-  display: grid;
-  place-items: center;
-  margin-bottom: 14px;
-}
-.ball {
-  width: 92px;
-  height: 92px;
+  width: 150px;
+  height: 150px;
+  margin-bottom: 18px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, var(--circle-out), var(--circle) 75%);
   border: 2px solid var(--circle-edge);
 }
 .kicker {
-  margin: 0 0 2px;
+  margin: 0 0 4px;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--accent);
 }
+.featured h2 {
+  font-size: 1.8rem;
+  margin-bottom: 4px;
+}
 .purpose {
-  margin: 4px 0 12px;
+  max-width: 32ch;
+  margin: 0 0 20px;
   color: var(--muted);
 }
-.duration {
-  margin-bottom: 16px;
+.start {
+  font-size: 1.15rem;
+  padding: 18px;
 }
-.usual {
-  margin-top: 8px;
+.pills {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+.pill {
+  flex: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--secondary);
+  color: var(--accent);
+  font-size: 0.92rem;
+}
+.tag {
+  font-weight: 400;
 }
 .contracted {
   display: flex;
   flex-direction: column;
   gap: 14px;
   padding-top: 40px;
+}
+.contracted .greeting {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.contracted .because {
+  margin: 0;
 }
 .contracted .big {
   padding: 26px 18px;

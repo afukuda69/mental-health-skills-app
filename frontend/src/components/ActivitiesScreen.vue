@@ -1,5 +1,6 @@
 <script setup>
-// One card per skill (not a library or dashboard: three items, design D2).
+// Every skill, always available, as a plain list (three items, not a
+// library or dashboard: design D2). A colour stripe marks each skill.
 // Suggestions are labels only; nothing starts until tapped (AGENTS.md rule 9).
 import { SKILLS } from '../content/skills.js'
 import { plannedSeconds } from '../timing.js'
@@ -8,68 +9,111 @@ import AppIcon from './AppIcon.vue'
 defineProps({ usualSkill: { type: String, default: null } })
 defineEmits(['start', 'navigate'])
 
-const ICONS = { breathing: ['breath', 'sage'], stop: ['pause', 'pink'], reframe: ['spark', 'blue'] }
 const ORDER = ['breathing', 'stop', 'reframe']
 </script>
 
 <template>
   <main class="screen">
     <h1>Activities</h1>
-    <p class="section-label">Skills</p>
-    <div class="cards">
-      <article v-for="id in ORDER" :key="id" class="card skill" :class="{ tint: id === usualSkill }">
-        <div class="top">
-          <span class="icon-tile" :class="ICONS[id][1]"><AppIcon :name="ICONS[id][0]" /></span>
-          <span class="chip"><AppIcon name="clock" :size="16" /> {{ plannedSeconds(SKILLS[id]) }} seconds</span>
-        </div>
-        <h2>{{ SKILLS[id].label }}</h2>
-        <p class="muted purpose">{{ SKILLS[id].purpose }}</p>
-        <p class="effort">
-          {{ SKILLS[id].effort }}<span v-if="id === usualSkill"> · Your usual</span>
-        </p>
-        <button
-          v-if="SKILLS[id].available"
-          type="button"
-          class="primary"
-          :aria-label="`Start ${SKILLS[id].label}`"
-          @click="$emit('start', id)"
-        >
-          Start
+    <ul class="skills">
+      <li v-for="id in ORDER" :key="id" class="skill" :class="id">
+        <button type="button" class="row" :aria-label="`Start ${SKILLS[id].label}`" @click="$emit('start', id)">
+          <span class="text">
+            <span class="name">
+              {{ SKILLS[id].label }}
+              <span v-if="id === usualSkill" class="usual">Your usual</span>
+            </span>
+            <span class="purpose">{{ SKILLS[id].purpose }}</span>
+            <span class="meta">{{ plannedSeconds(SKILLS[id]) }} seconds · {{ SKILLS[id].effort }}</span>
+          </span>
+          <AppIcon class="chevron" name="chevron" />
         </button>
-        <p v-else class="muted">Not available yet.</p>
-      </article>
-    </div>
+      </li>
+    </ul>
 
-    <p class="section-label">Optional chat</p>
-    <div class="list">
-      <button type="button" class="list-row" @click="$emit('navigate', 'chat')">
-        <span class="icon-tile pink"><AppIcon name="chat" /></span>
-        <span><span class="title">Talk it through · optional chat</span><span class="sub">Ask about a skill or explore a fictional scenario.</span></span>
-        <AppIcon class="chevron" name="chevron" />
-      </button>
-    </div>
+    <ul class="skills">
+      <li class="skill chat">
+        <button type="button" class="row" @click="$emit('navigate', 'chat')">
+          <span class="text">
+            <span class="name">Talk it through</span>
+            <span class="purpose">Optional chat. Ask about a skill or explore a fictional scenario.</span>
+          </span>
+          <AppIcon class="chevron" name="chevron" />
+        </button>
+      </li>
+    </ul>
   </main>
 </template>
 
 <style scoped>
-.cards {
+.skills {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  background: var(--surface);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.skill + .skill {
+  border-top: 1px solid var(--line);
+}
+/* The stripe: a 6 px coloured edge on the left of each row. */
+.skill {
+  border-left: 6px solid var(--line);
+}
+.skill.breathing {
+  border-left-color: var(--skill-breathing);
+}
+.skill.stop {
+  border-left-color: var(--skill-stop);
+}
+.skill.reframe {
+  border-left-color: var(--skill-reframe);
+}
+.skill.chat {
+  border-left-color: var(--secondary);
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px;
+  border-radius: 0;
+  background: none;
+  color: var(--text);
+  text-align: left;
+  font-weight: 400;
+}
+.text {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 2px;
 }
-.top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+.name {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.usual {
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--secondary);
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 .purpose {
-  margin: 4px 0 6px;
+  color: var(--muted);
+  font-size: 0.92rem;
 }
-.effort {
-  margin: 0 0 14px;
+.meta {
+  color: var(--muted);
   font-size: 0.85rem;
-  font-weight: 600;
+}
+.chevron {
+  margin-left: auto;
+  flex: none;
   color: var(--muted);
 }
 </style>

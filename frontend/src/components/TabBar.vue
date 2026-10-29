@@ -32,7 +32,8 @@ const TABS = [
         @click="$emit('navigate', t.id)"
       >
         <span class="icon"><AppIcon :name="t.icon" /></span>
-        <span>{{ t.label }}</span>
+        <!-- Icons only; the active tab shows its label. Others keep it for screen readers. -->
+        <span :class="active === t.id ? 'name' : 'sr'">{{ t.label }}</span>
       </button>
     </template>
     <CrisisButton @open="$emit('crisis')" />
@@ -84,6 +85,12 @@ const TABS = [
 }
 .tab.active {
   color: var(--accent);
+}
+.tab {
+  justify-content: center;
+}
+.name {
+  font-size: 0.75rem;
 }
 .tab.active .icon {
   background: var(--secondary);

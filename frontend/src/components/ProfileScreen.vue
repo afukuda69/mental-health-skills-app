@@ -5,6 +5,7 @@
 import { ref, watch } from 'vue'
 import { deleteAllHistory, resetProfile, updateProfile } from '../api.js'
 import { CHECKIN_LABELS, SKILLS } from '../content/skills.js'
+import AppIcon from './AppIcon.vue'
 import HistoryView from './HistoryView.vue'
 
 const props = defineProps({ profile: { type: Object, default: null } })
@@ -14,6 +15,11 @@ const nameDraft = ref(props.profile?.display_name ?? '')
 const notice = ref('')
 const confirming = ref(false)
 const historyKey = ref(0)
+// Which settings row is open for editing (one at a time).
+const editing = ref(null)
+const toggle = (row) => (editing.value = editing.value === row ? null : row)
+const usualLabel = (pr) => (pr.usual_skill ? SKILLS[pr.usual_skill].label : 'None yet')
+const animateLabel = (pr) => (pr.animate_circle === null ? 'System setting' : pr.animate_circle ? 'On' : 'Off')
 watch(
   () => props.profile?.display_name,
   (n) => (nameDraft.value = n ?? ''),
@@ -60,69 +66,91 @@ async function deleteAll() {
 
     <p v-if="!profile" class="muted">The profile can't be loaded right now.</p>
     <template v-else>
-      <div class="card item">
-        <label for="display-name" class="item-title">Display name</label>
-        <p class="source">{{ profile.display_name ? 'You chose this' : 'Not set (optional)' }}</p>
-        <form class="inline" @submit.prevent="save({ display_name: nameDraft || null }, 'Name saved.')">
+      <p class="group-label">About you</p>
+      <div class="group">
+        <button type="button" class="setting" :aria-expanded="editing === 'name'" @click="toggle('name')">
+          <span class="left"><span class="label">Display name</span><span class="source">{{ profile.display_name ? 'You chose this' : 'Optional' }}</span></span>
+          <span class="value">{{ profile.display_name ?? 'Not set' }}</span>
+          <AppIcon class="chevron" :class="{ open: editing === 'name' }" name="chevron" :size="18" />
+        </button>
+        <form v-if="editing === 'name'" class="editor" @submit.prevent="save({ display_name: nameDraft || null }, 'Name saved.')">
+          <label for="display-name" class="sr">Display name</label>
           <input id="display-name" v-model="nameDraft" type="text" maxlength="40" autocomplete="off" />
           <button type="submit">Save</button>
         </form>
       </div>
 
-      <div class="card item">
-        <label for="usual-skill" class="item-title">Usual skill</label>
-        <p class="value">{{ profile.usual_skill ? SKILLS[profile.usual_skill].label : 'None yet' }}</p>
-        <p class="source">
-          {{ SOURCE[profile.usual_source] ?? 'Learned after your first finished session' }}
-          <template v-if="profile.usual_source === 'chosen' && profile.learned_usual">
-            (learned would be {{ SKILLS[profile.learned_usual].label }})
-          </template>
-        </p>
-        <select
-          id="usual-skill"
-          :value="profile.usual_source === 'chosen' ? profile.usual_skill : ''"
-          @change="save({ usual_skill: $event.target.value || null }, 'Usual skill saved.')"
-        >
-          <option value="">Let the app learn it</option>
-          <option v-for="s in Object.values(SKILLS)" :key="s.id" :value="s.id">{{ s.label }}</option>
-        </select>
+      <p class="group-label">Preferences</p>
+      <div class="group">
+        <button type="button" class="setting" :aria-expanded="editing === 'usual'" @click="toggle('usual')">
+          <span class="left">
+            <span class="label">Usual skill</span>
+            <span class="source">
+              {{ SOURCE[profile.usual_source] ?? 'Learned after your first finished session' }}<template v-if="profile.usual_source === 'chosen' && profile.learned_usual"> (learned: {{ SKILLS[profile.learned_usual].label }})</template>
+            </span>
+          </span>
+          <span class="value">{{ usualLabel(profile) }}</span>
+          <AppIcon class="chevron" :class="{ open: editing === 'usual' }" name="chevron" :size="18" />
+        </button>
+        <div v-if="editing === 'usual'" class="editor">
+          <label for="usual-skill" class="sr">Usual skill</label>
+          <select
+            id="usual-skill"
+            :value="profile.usual_source === 'chosen' ? profile.usual_skill : ''"
+            @change="save({ usual_skill: $event.target.value || null }, 'Usual skill saved.')"
+          >
+            <option value="">Let the app learn it</option>
+            <option v-for="s in Object.values(SKILLS)" :key="s.id" :value="s.id">{{ s.label }}</option>
+          </select>
+        </div>
+
+        <button type="button" class="setting" :aria-expanded="editing === 'animate'" @click="toggle('animate')">
+          <span class="left"><span class="label">Animate the breathing circle</span><span class="source">{{ SOURCE[profile.animate_source] }}</span></span>
+          <span class="value">{{ animateLabel(profile) }}</span>
+          <AppIcon class="chevron" :class="{ open: editing === 'animate' }" name="chevron" :size="18" />
+        </button>
+        <div v-if="editing === 'animate'" class="editor">
+          <label for="animate-circle" class="sr">Animate the breathing circle</label>
+          <select
+            id="animate-circle"
+            :value="profile.animate_circle === null ? '' : String(profile.animate_circle)"
+            @change="save({ animate_circle: $event.target.value === '' ? null : $event.target.value === 'true' }, 'Motion setting saved.')"
+          >
+            <option value="">Follow the system setting</option>
+            <option value="true">On</option>
+            <option value="false">Off</option>
+          </select>
+        </div>
       </div>
 
-      <div class="card item">
-        <label for="animate-circle" class="item-title">Animate the breathing circle</label>
-        <p class="value">{{ profile.animate_circle === null ? 'System setting' : profile.animate_circle ? 'On' : 'Off' }}</p>
-        <p class="source">{{ SOURCE[profile.animate_source] }}</p>
-        <select
-          id="animate-circle"
-          :value="profile.animate_circle === null ? '' : String(profile.animate_circle)"
-          @change="save({ animate_circle: $event.target.value === '' ? null : $event.target.value === 'true' }, 'Motion setting saved.')"
-        >
-          <option value="">Follow the system setting</option>
-          <option value="true">On</option>
-          <option value="false">Off</option>
-        </select>
-      </div>
-
-      <div class="card item">
-        <p class="item-title">Last check-in</p>
-        <p class="value">{{ profile.last_checkin ? CHECKIN_LABELS[profile.last_checkin] : 'None' }}</p>
-        <p class="source">{{ profile.last_checkin ? `You chose this on Home, ${fmt(profile.last_checkin_at)}` : 'Chosen on Home' }}</p>
-      </div>
-
-      <div class="card item">
-        <p class="item-title">Sessions per skill</p>
-        <p class="source">Counted from your history</p>
-        <ul class="counts">
+      <p class="group-label">Activity</p>
+      <div class="group">
+        <div class="setting static">
+          <span class="left"><span class="label">Last check-in</span><span class="source">{{ profile.last_checkin ? `Chosen on Home, ${fmt(profile.last_checkin_at)}` : 'Chosen on Home' }}</span></span>
+          <span class="value">{{ profile.last_checkin ? CHECKIN_LABELS[profile.last_checkin] : 'None' }}</span>
+        </div>
+        <button type="button" class="setting" :aria-expanded="editing === 'counts'" @click="toggle('counts')">
+          <span class="left"><span class="label">Sessions per skill</span><span class="source">Counted from your history</span></span>
+          <span class="value">{{ Object.values(profile.counts).reduce((n, c) => n + c.completed + c.stopped + c.left, 0) }}</span>
+          <AppIcon class="chevron" :class="{ open: editing === 'counts' }" name="chevron" :size="18" />
+        </button>
+        <ul v-if="editing === 'counts'" class="editor counts">
           <li v-for="(c, id) in profile.counts" :key="id">
             <strong>{{ SKILLS[id].label }}</strong>: {{ c.completed }} completed, {{ c.stopped }} stopped, {{ c.left }} left
           </li>
         </ul>
       </div>
 
-      <div class="actions">
-        <button type="button" @click="reset">Reset to learned</button>
-        <button v-if="!confirming" type="button" class="danger-soft" @click="confirming = true">Delete all</button>
-        <div v-else class="card confirm" role="group" aria-label="Confirm delete">
+      <p class="group-label">Your data</p>
+      <div class="group">
+        <button type="button" class="setting action" @click="reset">
+          <span class="label">Reset to learned</span>
+          <span class="value small">Clears your choices</span>
+        </button>
+        <button v-if="!confirming" type="button" class="setting action danger" @click="confirming = true">
+          <span class="label">Delete all</span>
+        </button>
+        <div v-else class="editor confirm" role="group" aria-label="Confirm delete">
           <p>Delete the profile, every saved practice, and every conversation? This can't be undone.</p>
           <button type="button" class="danger-soft" @click="deleteAll">Delete all</button>
           <button type="button" @click="confirming = false">Keep everything</button>
@@ -137,48 +165,89 @@ async function deleteAll() {
 
 <style scoped>
 .intro {
-  margin: -8px 0 16px;
+  margin: -8px 0 8px;
 }
-.item {
-  margin-bottom: 12px;
-}
-.item-title {
-  display: block;
-  margin: 0;
-  font-weight: 700;
-}
-.value {
-  margin: 2px 0 0;
-}
-.source {
-  margin: 2px 0 10px;
-  font-size: 0.85rem;
+.group-label {
+  margin: 20px 6px 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
   color: var(--muted);
 }
-.inline {
+/* Settings-style group: rows separated by hairlines, no cards. */
+.group {
+  background: var(--surface);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.setting {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 12px 16px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: none;
+  color: var(--text);
+  font-weight: 400;
+  text-align: left;
+}
+.group > .setting:first-child {
+  border-top: 0;
+}
+.left {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.label {
+  font-weight: 600;
+}
+.source {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.value {
+  margin-left: auto;
+  text-align: right;
+  color: var(--muted);
+}
+.value.small {
+  font-size: 0.85rem;
+}
+.chevron {
+  flex: none;
+  color: var(--muted);
+}
+.chevron.open {
+  transform: rotate(90deg);
+}
+.action .label {
+  color: var(--accent);
+}
+.danger .label {
+  color: var(--crisis-text);
+}
+.editor {
   display: flex;
   gap: 8px;
+  padding: 0 16px 14px;
 }
-.inline input {
+.editor input,
+.editor select {
   flex: 1;
 }
-select {
-  width: 100%;
-}
 .counts {
-  margin: 0;
-  padding-left: 18px;
-}
-.actions {
-  display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 16px;
+  margin: 0;
+  padding-left: 34px;
 }
 .confirm {
-  display: flex;
   flex-direction: column;
-  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
 }
 .confirm p {
   margin: 0;

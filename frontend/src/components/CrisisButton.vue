@@ -1,5 +1,7 @@
 <script setup>
 // The Crisis tab in the bottom bar, on every screen. Imports only content/crisis.js.
+// Its label is always shown (other tabs are icon-only) so it never depends on
+// recognising an icon.
 import { CRISIS } from '../content/crisis.js'
 
 defineEmits(['open'])
