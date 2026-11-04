@@ -11,6 +11,8 @@ This checks software behavior and design decisions using fictional scenarios onl
 
 **How it ran:** [e2e/evaluate.mjs](../e2e/evaluate.mjs) drives the real Vue app and FastAPI backend in headless Chromium. Each scenario has its own temp database and OS-assigned ports. Model replies are the saved fixtures in `backend/tests/fixtures/mock_responses.json`. Expected results were written before the run. Each scenario number links to its checks, console lines, and API requests.
 
+**Re-run:** the table is from the published run. After a one-line fix to a mock reply and the merge with main, all 28 scenarios were run again on commit `46ea956`: 28 of 28 passed.
+
 **First-run failures, for honesty:** the first run hung, because my harness missed a process killed by a signal. The next had 27 of 28, because S04 had no assertions and S09 clicked a button by the wrong name. All three were bugs in the test code, not the app, and the table is from a later clean run.
 
 ## Scenarios

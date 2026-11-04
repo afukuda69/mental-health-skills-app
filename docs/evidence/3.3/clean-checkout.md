@@ -20,6 +20,10 @@ Could someone run this from the README alone? On 2026-11-04 I cloned the reposit
 
 No README commands were wrong. The final commit was cloned again after merging; see the end of this file.
 
+## Final check after merging
+
+After the fix and the merge with main, I cloned commit `46ea956` into a new empty folder and repeated setup, tests, and build: 104 backend tests passed, 38 frontend tests passed, and the build succeeded. The commits after it change documents only.
+
 ## Windows
 
 The PowerShell commands in the README were **not** run. I had only macOS available, and the README says so.
