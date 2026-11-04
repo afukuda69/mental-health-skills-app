@@ -1,0 +1,1511 @@
+{
+ "date": "2026-11-04",
+ "passed": 28,
+ "total": 28,
+ "seconds": 139,
+ "results": [
+  {
+   "id": "S01",
+   "group": "Ordinary use",
+   "title": "Paced breathing, full run",
+   "does": "Picks Paced breathing in Activities and follows it to the end, then rates it Helped.",
+   "expected": "Seven cycles, closing text, check-in, Done. Saved as completed, 7/7, about 75 s.",
+   "observed": "Completed 7/7 in 75.0 s. Closing: \"You took seven slow breaths.\". Rated Helped.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "Crisis visible: breathing intro"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: breathing intro"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: breathing intro"
+    },
+    {
+     "ok": true,
+     "label": "Crisis visible: breathing closing"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: breathing closing"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: breathing closing"
+    },
+    {
+     "ok": true,
+     "label": "Crisis visible: check-in"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: check-in"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: check-in"
+    },
+    {
+     "ok": true,
+     "label": "Crisis visible: done"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: done"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: done"
+    },
+    {
+     "ok": true,
+     "label": "completed 7/7"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [
+    "breathing intro",
+    "breathing closing",
+    "check-in",
+    "done"
+   ],
+   "timings": [
+    {
+     "label": "breathing",
+     "planned_ms": 75000,
+     "measured_ms": 75011,
+     "pauses_ms": 0,
+     "crisis_ms": 33,
+     "setup_ms": 50
+    }
+   ],
+   "console": [
+    "[timing] setup_ms=50 (entry and skill pick, reported separately)",
+    "[model] acknowledgment status=mock latency_ms=0",
+    "[timing] exercise measured_ms=75011 pauses_ms=0 crisis_ms=33 planned_ms=75000 end_reason=completed"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/acknowledgment",
+    "POST /api/sessions/<id>/end",
+    "POST /api/sessions/<id>/feedback"
+   ]
+  },
+  {
+   "id": "S02",
+   "group": "Ordinary use",
+   "title": "STOP at a reading pace",
+   "does": "Reads each of the four STOP screens for about 13 s, then taps Next.",
+   "expected": "Four steps in order, then check-in. Completed 4/4, under the 60 s plan.",
+   "observed": "Steps: Stop. / Take a step back. / Observe. / Proceed mindfully.. Completed 4/4 in 52.1 s of 60.0 s planned.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "steps in design order"
+    },
+    {
+     "ok": true,
+     "label": "completed 4/4"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [
+    {
+     "label": "stop-reading-pace",
+     "planned_ms": 60000,
+     "measured_ms": 52127,
+     "pauses_ms": 0,
+     "crisis_ms": 0,
+     "setup_ms": 41
+    }
+   ],
+   "console": [
+    "[timing] setup_ms=41 (entry and skill pick, reported separately)",
+    "[timing] exercise measured_ms=52127 pauses_ms=0 crisis_ms=0 planned_ms=60000 end_reason=completed"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S03",
+   "group": "Ordinary use",
+   "title": "Reframe at a reading pace, with typing",
+   "does": "Types a fictional thought, picks a chip, types another view, about 14 s per step, reads the reflection for 12 s.",
+   "expected": "Reflection appears. Only the step-3 answer is sent; nothing typed is stored.",
+   "observed": "Completed 4/4 in 54.2 s of 70.0 s planned. Reflection: \"Another way to see it: it may not be as certain as it feels.\". Step-3 text sent once, to /reflection. Step-1 text never left the browser.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "Crisis visible: reframe step"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: reframe step"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: reframe step"
+    },
+    {
+     "ok": true,
+     "label": "step-3 answer sent once, to /reflection only"
+    },
+    {
+     "ok": true,
+     "label": "step-1 text never sent"
+    },
+    {
+     "ok": true,
+     "label": "completed"
+    },
+    {
+     "ok": true,
+     "label": "\"FICT-R1\" stored nowhere"
+    },
+    {
+     "ok": true,
+     "label": "\"FICT-R1\" sent nowhere"
+    },
+    {
+     "ok": true,
+     "label": "\"FICT-R3\" stored nowhere"
+    },
+    {
+     "ok": true,
+     "label": "nothing in browser storage"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [
+    "reframe step"
+   ],
+   "timings": [
+    {
+     "label": "reframe-reading-pace",
+     "planned_ms": 70000,
+     "measured_ms": 54217,
+     "pauses_ms": 0,
+     "crisis_ms": 32,
+     "setup_ms": 66
+    }
+   ],
+   "console": [
+    "[timing] setup_ms=66 (entry and skill pick, reported separately)",
+    "[timing] exercise measured_ms=54217 pauses_ms=0 crisis_ms=32 planned_ms=70000 end_reason=completed"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/reflection",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S04",
+   "group": "Intended pace",
+   "title": "STOP at its planned budget",
+   "does": "Takes the full 15 s on each STOP screen.",
+   "expected": "About 60 s, within 90 s.",
+   "observed": "Completed in 60.1 s of 60.0 s planned.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "completed 4/4"
+    },
+    {
+     "ok": true,
+     "label": "within 90 s"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [
+    {
+     "label": "stop-intended-pace",
+     "planned_ms": 60000,
+     "measured_ms": 60066,
+     "pauses_ms": 0,
+     "crisis_ms": 0,
+     "setup_ms": 48
+    }
+   ],
+   "console": [
+    "[timing] setup_ms=48 (entry and skill pick, reported separately)",
+    "[timing] exercise measured_ms=60066 pauses_ms=0 crisis_ms=0 planned_ms=60000 end_reason=completed"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S05",
+   "group": "Intended pace",
+   "title": "Reframe at its planned budget, slowest model",
+   "does": "Takes the full 20 s on each input step with the model timing out, then reads for 5 s.",
+   "expected": "The worst planned case: about 70 s plus model wait, within 90 s, with fallback text.",
+   "observed": "Completed in 70.5 s of 70.0 s planned, with \"You've noted another way to look at it.\"",
+   "pass": true,
+   "mode": "mock_timeout",
+   "checks": [
+    {
+     "ok": true,
+     "label": "fallback reflection"
+    },
+    {
+     "ok": true,
+     "label": "completed within 90 s"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [
+    {
+     "label": "reframe-intended-pace-timeout",
+     "planned_ms": 70000,
+     "measured_ms": 70526,
+     "pauses_ms": 0,
+     "crisis_ms": 0,
+     "setup_ms": 38
+    }
+   ],
+   "console": [
+    "[timing] setup_ms=38 (entry and skill pick, reported separately)",
+    "[timing] exercise measured_ms=70526 pauses_ms=0 crisis_ms=0 planned_ms=70000 end_reason=completed"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/reflection",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S06",
+   "group": "Check-in",
+   "title": "Tense suggests breathing",
+   "does": "Taps \"Tense or wound up\" on Home.",
+   "expected": "A breathing suggestion with the reason and a Change link. Nothing starts.",
+   "observed": "Breathing suggested with the reason and Change. No session started. Activities still lists every skill.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "suggestion with reason"
+    },
+    {
+     "ok": true,
+     "label": "no session started by itself"
+    },
+    {
+     "ok": true,
+     "label": "Crisis visible: home with suggestion"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: home with suggestion"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: home with suggestion"
+    },
+    {
+     "ok": true,
+     "label": "all skills still listed"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [
+    "home with suggestion"
+   ],
+   "timings": [],
+   "console": [],
+   "requests": [
+    "GET /api/profile",
+    "POST /api/profile",
+    "GET /api/profile"
+   ]
+  },
+  {
+   "id": "S07",
+   "group": "Check-in",
+   "title": "Overwhelmed contracts Home",
+   "does": "Taps \"Overwhelmed\", then \"Show everything\".",
+   "expected": "One big breathing button, Crisis, Show everything; tabs reduced to Crisis. Show everything restores the rest.",
+   "observed": "Tabs during: [Crisis]. After Show everything: [Home,Activities,Chat,Profile,Crisis].",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "only Crisis in the bar"
+    },
+    {
+     "ok": true,
+     "label": "one big button"
+    },
+    {
+     "ok": true,
+     "label": "other content hidden"
+    },
+    {
+     "ok": true,
+     "label": "Crisis visible: contracted home"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: contracted home"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: contracted home"
+    },
+    {
+     "ok": true,
+     "label": "full tabs back"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [
+    "contracted home"
+   ],
+   "timings": [],
+   "console": [],
+   "requests": [
+    "GET /api/profile",
+    "POST /api/profile"
+   ]
+  },
+  {
+   "id": "S08",
+   "group": "Check-in",
+   "title": "Overriding a suggestion",
+   "does": "Taps Tense, Change, Okay, Change, Skip.",
+   "expected": "Each choice can be undone. Okay shows the usual skill. Skip suggests nothing.",
+   "observed": "Tense, Okay and Skip each applied and could be changed. Okay showed the usual skill. Skip showed no suggestion.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "Okay shows the usual skill"
+    },
+    {
+     "ok": true,
+     "label": "Skip suggests nothing"
+    },
+    {
+     "ok": true,
+     "label": "last check-in saved"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [],
+   "console": [],
+   "requests": [
+    "GET /api/profile",
+    "POST /api/profile",
+    "POST /api/profile",
+    "POST /api/profile"
+   ]
+  },
+  {
+   "id": "S09",
+   "group": "Profile",
+   "title": "Choosing a usual skill, then resetting",
+   "does": "Sets Usual skill to STOP in Profile, checks Home and Activities, then taps Reset to learned.",
+   "expected": "STOP shows as chosen and is used in Home and Activities. Reset returns to the learned skill.",
+   "observed": "Chosen STOP showed in Profile, Home and Activities. Reset returned to Paced breathing, learned.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "Crisis visible: profile"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: profile"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: profile"
+    },
+    {
+     "ok": true,
+     "label": "Crisis visible: activities"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: activities"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: activities"
+    },
+    {
+     "ok": true,
+     "label": "shown as chosen"
+    },
+    {
+     "ok": true,
+     "label": "Home uses it"
+    },
+    {
+     "ok": true,
+     "label": "Activities tag follows it"
+    },
+    {
+     "ok": true,
+     "label": "reset returns to learned"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [
+    "profile",
+    "activities"
+   ],
+   "timings": [],
+   "console": [],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "GET /api/history",
+    "POST /api/profile",
+    "GET /api/history",
+    "GET /api/profile",
+    "POST /api/profile",
+    "GET /api/profile",
+    "GET /api/profile",
+    "GET /api/history",
+    "POST /api/profile/reset",
+    "GET /api/history"
+   ]
+  },
+  {
+   "id": "S10",
+   "group": "Profile",
+   "title": "Usual skill updates from use",
+   "does": "Finishes STOP and rates it Helped, then opens Profile.",
+   "expected": "Counts rise and the learned usual skill becomes STOP.",
+   "observed": "Usual went from Paced breathing to STOP (learned). Counts: Paced breathing: 2 completed, 1 stopped, 0 left; STOP: 2 completed, 0 stopped, 0 left; Cognitive reframe: 1 completed, 0 stopped, 0 left.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "usual moved to STOP, learned"
+    },
+    {
+     "ok": true,
+     "label": "count rose"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [],
+   "console": [
+    "[timing] setup_ms=33 (entry and skill pick, reported separately)",
+    "[timing] exercise measured_ms=8882 pauses_ms=0 crisis_ms=0 planned_ms=60000 end_reason=completed"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "GET /api/history",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/end",
+    "POST /api/sessions/<id>/feedback",
+    "GET /api/profile",
+    "GET /api/profile",
+    "GET /api/history"
+   ]
+  },
+  {
+   "id": "S11",
+   "group": "Chat",
+   "title": "Reply uses the profile",
+   "does": "Asks for help before a fictional presentation.",
+   "expected": "Reply uses the name and usual skill and offers it. The user taps to start.",
+   "observed": "\"Hi Alex. For a moment like that, your usual skill, Paced breathing, may fit. You can start it below, or choose another.\" with a Start button. No session started.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "Crisis visible: chat"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: chat"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: chat"
+    },
+    {
+     "ok": true,
+     "label": "tailored"
+    },
+    {
+     "ok": true,
+     "label": "offer button"
+    },
+    {
+     "ok": true,
+     "label": "nothing started by itself"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [
+    "chat"
+   ],
+   "timings": [],
+   "console": [],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/conversations",
+    "POST /api/conversations",
+    "GET /api/conversations",
+    "GET /api/conversations/1/messages",
+    "POST /api/conversations/1/messages",
+    "GET /api/conversations"
+   ]
+  },
+  {
+   "id": "S12",
+   "group": "Chat",
+   "title": "A request for a diagnosis",
+   "does": "Asks \"Can you tell me if I have anxiety?\"",
+   "expected": "The limit reply and links to the three skills. No diagnosis.",
+   "observed": "\"I can't give a useful reply to that here. This is a coursework prototype and can't assess anything. You can try one of the skills below.\" with three skill links.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "three skill links"
+    },
+    {
+     "ok": true,
+     "label": "limits bar visible"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [],
+   "console": [],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/conversations",
+    "POST /api/conversations",
+    "GET /api/conversations",
+    "GET /api/conversations/1/messages",
+    "POST /api/conversations/1/messages",
+    "GET /api/conversations"
+   ]
+  },
+  {
+   "id": "S13",
+   "group": "Crisis phrase",
+   "title": "In the chat",
+   "does": "Types the fictional phrase \"I want to die\".",
+   "expected": "Panel opens, scripted reply, no model call, typed text not stored, flag stored.",
+   "observed": "Panel opened. Rows: user (no text, flag 1), scripted (flag 1). No model row.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "user row with no text, flag set"
+    },
+    {
+     "ok": true,
+     "label": "scripted reply, no model status"
+    },
+    {
+     "ok": true,
+     "label": "\"I want to die\" stored nowhere"
+    },
+    {
+     "ok": true,
+     "label": "nothing in browser storage"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [],
+   "console": [],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/conversations",
+    "POST /api/conversations",
+    "GET /api/conversations",
+    "GET /api/conversations/1/messages",
+    "POST /api/conversations/1/messages",
+    "GET /api/conversations"
+   ]
+  },
+  {
+   "id": "S14",
+   "group": "Crisis phrase",
+   "title": "In the reframe",
+   "does": "Types the phrase in a reframe step, closes the panel, carries on.",
+   "expected": "Panel opens and pauses. Text stays on screen. It is never sent or stored.",
+   "observed": "Panel opened both times, text kept, crisis_ms 3053. No reflection request; fallback text shown.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "text kept after the panel"
+    },
+    {
+     "ok": true,
+     "label": "crisis time recorded"
+    },
+    {
+     "ok": true,
+     "label": "no reflection request"
+    },
+    {
+     "ok": true,
+     "label": "fallback reflection"
+    },
+    {
+     "ok": true,
+     "label": "\"I want to die\" stored nowhere"
+    },
+    {
+     "ok": true,
+     "label": "\"I want to die\" sent nowhere"
+    },
+    {
+     "ok": true,
+     "label": "nothing in browser storage"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [],
+   "console": [
+    "[timing] setup_ms=42 (entry and skill pick, reported separately)",
+    "[timing] exercise measured_ms=9438 pauses_ms=0 crisis_ms=3053 planned_ms=70000 end_reason=completed"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S15",
+   "group": "Crisis phrase",
+   "title": "In the STOP note",
+   "does": "Opens the optional note on Observe and types the phrase.",
+   "expected": "Panel opens and pauses. The note is never sent or stored.",
+   "observed": "Panel opened, crisis_ms 3027, session completed. Phrase in no request and no table.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "crisis time recorded, finished"
+    },
+    {
+     "ok": true,
+     "label": "\"I want to die\" stored nowhere"
+    },
+    {
+     "ok": true,
+     "label": "\"I want to die\" sent nowhere"
+    },
+    {
+     "ok": true,
+     "label": "nothing in browser storage"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [],
+   "console": [
+    "[timing] setup_ms=131 (entry and skill pick, reported separately)",
+    "[timing] exercise measured_ms=9459 pauses_ms=0 crisis_ms=3027 planned_ms=60000 end_reason=completed"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S16",
+   "group": "Interruption",
+   "title": "Stop mid-exercise",
+   "does": "Taps Stop exercise during cycle 2.",
+   "expected": "No dialog, no check-in, \"Stopped. That's fine.\" Saved as stopped.",
+   "observed": "Stopped at 15.5 s, 1/7 cycles. No dialog, no check-in.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "Crisis visible: breathing running"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: breathing running"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: breathing running"
+    },
+    {
+     "ok": true,
+     "label": "Crisis visible: stopped"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: stopped"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: stopped"
+    },
+    {
+     "ok": true,
+     "label": "saved as stopped"
+    },
+    {
+     "ok": true,
+     "label": "no dialog"
+    },
+    {
+     "ok": true,
+     "label": "no check-in saved"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [
+    "breathing running",
+    "stopped"
+   ],
+   "timings": [],
+   "console": [
+    "[timing] setup_ms=43 (entry and skill pick, reported separately)",
+    "[timing] exercise measured_ms=15455 pauses_ms=0 crisis_ms=33 planned_ms=75000 end_reason=stopped"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/end",
+    "GET /api/profile"
+   ]
+  },
+  {
+   "id": "S17",
+   "group": "Interruption",
+   "title": "Crisis panel mid-exercise",
+   "does": "Opens Crisis for 10 s during breathing, then goes back.",
+   "expected": "The cycle holds. Crisis time is stored apart and excluded from measured time.",
+   "observed": "\"Cycle 2 of 7\" held for the panel. crisis_ms 10048, measured 75.0 s.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "cycle held"
+    },
+    {
+     "ok": true,
+     "label": "crisis time about 10 s"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [
+    {
+     "label": "breathing-with-crisis",
+     "planned_ms": 75000,
+     "measured_ms": 75010,
+     "pauses_ms": 0,
+     "crisis_ms": 10048,
+     "setup_ms": 36
+    }
+   ],
+   "console": [
+    "[timing] setup_ms=36 (entry and skill pick, reported separately)",
+    "[model] acknowledgment status=mock latency_ms=0",
+    "[timing] exercise measured_ms=75010 pauses_ms=0 crisis_ms=10048 planned_ms=75000 end_reason=completed"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/acknowledgment",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S18",
+   "group": "Interruption",
+   "title": "Pause mid-exercise",
+   "does": "Pauses STOP for 4 s on step 2, then resumes.",
+   "expected": "Pause time is stored apart and excluded.",
+   "observed": "pauses_ms 4015, measured 12.1 s.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "pause about 4 s"
+    },
+    {
+     "ok": true,
+     "label": "pause not in measured time"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [
+    {
+     "label": "stop-with-pause",
+     "planned_ms": 60000,
+     "measured_ms": 12138,
+     "pauses_ms": 4015,
+     "crisis_ms": 0,
+     "setup_ms": 44
+    }
+   ],
+   "console": [
+    "[timing] setup_ms=44 (entry and skill pick, reported separately)",
+    "[timing] exercise measured_ms=12138 pauses_ms=4015 crisis_ms=0 planned_ms=60000 end_reason=completed"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S19",
+   "group": "Interruption",
+   "title": "Leaving the page",
+   "does": "Navigates away during cycle 2.",
+   "expected": "Saved as left, with the active time.",
+   "observed": "Saved as left at 15.4 s.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "saved as left"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [],
+   "console": [
+    "[timing] setup_ms=42 (entry and skill pick, reported separately)"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/end",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S20",
+   "group": "Interruption",
+   "title": "Hiding the tab and coming back",
+   "does": "Hides the page during STOP, comes back, resumes, finishes.",
+   "expected": "Saved as left while hidden, paused on return, then completed.",
+   "observed": "While hidden: left. On return: paused. End: completed, pauses_ms 1557.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "left, paused, then completed"
+    },
+    {
+     "ok": true,
+     "label": "hidden time excluded"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [],
+   "console": [
+    "[timing] setup_ms=42 (entry and skill pick, reported separately)",
+    "[timing] exercise measured_ms=9481 pauses_ms=1557 crisis_ms=0 planned_ms=60000 end_reason=completed"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/end",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S21",
+   "group": "Interruption",
+   "title": "Leaving with typed text on screen",
+   "does": "Types in the reframe and in the STOP note, then leaves.",
+   "expected": "The session ends as left. The text is sent nowhere and stored nowhere.",
+   "observed": "Saved as left. No request and no table contained the text.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "saved as left"
+    },
+    {
+     "ok": true,
+     "label": "\"FICT-LEAVE\" stored nowhere"
+    },
+    {
+     "ok": true,
+     "label": "\"FICT-LEAVE\" sent nowhere"
+    },
+    {
+     "ok": true,
+     "label": "nothing in browser storage"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [],
+   "console": [
+    "[timing] setup_ms=43 (entry and skill pick, reported separately)"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/end",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S22",
+   "group": "Failure",
+   "title": "Model error",
+   "does": "Uses chat and breathing while the model errors.",
+   "expected": "Fixed fallback in both. Crisis and the exercise keep working.",
+   "observed": "Chat: fixed fallback with skill links. Breathing: \"That was seven slow breaths.\", 75.0 s. Rows: fallback/error, fallback/error.",
+   "pass": true,
+   "mode": "mock_error",
+   "checks": [
+    {
+     "ok": true,
+     "label": "Crisis visible: chat after mock_error"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: chat after mock_error"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: chat after mock_error"
+    },
+    {
+     "ok": true,
+     "label": "skill links shown"
+    },
+    {
+     "ok": true,
+     "label": "Crisis visible: breathing closing after mock_error"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: breathing closing after mock_error"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: breathing closing after mock_error"
+    },
+    {
+     "ok": true,
+     "label": "status logged"
+    },
+    {
+     "ok": true,
+     "label": "two fallback rows"
+    },
+    {
+     "ok": true,
+     "label": "breathing fallback"
+    },
+    {
+     "ok": true,
+     "label": "chat fallback"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [
+    "chat after mock_error",
+    "breathing closing after mock_error"
+   ],
+   "timings": [
+    {
+     "label": "breathing-mock_error",
+     "planned_ms": 75000,
+     "measured_ms": 75012,
+     "pauses_ms": 0,
+     "crisis_ms": 0,
+     "setup_ms": 32
+    }
+   ],
+   "console": [
+    "[timing] setup_ms=32 (entry and skill pick, reported separately)",
+    "[model] acknowledgment status=error latency_ms=0",
+    "[timing] exercise measured_ms=75012 pauses_ms=0 crisis_ms=0 planned_ms=75000 end_reason=completed"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/conversations",
+    "POST /api/conversations",
+    "GET /api/conversations",
+    "GET /api/conversations/1/messages",
+    "POST /api/conversations/1/messages",
+    "GET /api/conversations",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/acknowledgment",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S23",
+   "group": "Failure",
+   "title": "Model timeout",
+   "does": "Uses chat and breathing while the model takes too long.",
+   "expected": "Fallback after 5 s in chat. Breathing is not delayed.",
+   "observed": "Chat: fixed fallback with skill links. Breathing: \"That was seven slow breaths.\", 75.0 s. Rows: fallback/timeout, fallback/timeout.",
+   "pass": true,
+   "mode": "mock_timeout",
+   "checks": [
+    {
+     "ok": true,
+     "label": "Crisis visible: chat after mock_timeout"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: chat after mock_timeout"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: chat after mock_timeout"
+    },
+    {
+     "ok": true,
+     "label": "skill links shown"
+    },
+    {
+     "ok": true,
+     "label": "Crisis visible: breathing closing after mock_timeout"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: breathing closing after mock_timeout"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: breathing closing after mock_timeout"
+    },
+    {
+     "ok": true,
+     "label": "status logged"
+    },
+    {
+     "ok": true,
+     "label": "two fallback rows"
+    },
+    {
+     "ok": true,
+     "label": "breathing fallback"
+    },
+    {
+     "ok": true,
+     "label": "chat fallback"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [
+    "chat after mock_timeout",
+    "breathing closing after mock_timeout"
+   ],
+   "timings": [
+    {
+     "label": "breathing-mock_timeout",
+     "planned_ms": 75000,
+     "measured_ms": 75012,
+     "pauses_ms": 0,
+     "crisis_ms": 0,
+     "setup_ms": 34
+    }
+   ],
+   "console": [
+    "[timing] setup_ms=34 (entry and skill pick, reported separately)",
+    "[model] acknowledgment status=timeout latency_ms=5005",
+    "[timing] exercise measured_ms=75012 pauses_ms=0 crisis_ms=0 planned_ms=75000 end_reason=completed"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/conversations",
+    "POST /api/conversations",
+    "GET /api/conversations",
+    "GET /api/conversations/1/messages",
+    "POST /api/conversations/1/messages",
+    "GET /api/conversations",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/acknowledgment",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S24",
+   "group": "Failure",
+   "title": "Malformed model output",
+   "does": "Uses chat and breathing while the model returns unusable text.",
+   "expected": "Output rejected, fixed fallback in both.",
+   "observed": "Chat: fixed fallback with skill links. Breathing: \"That was seven slow breaths.\", 75.0 s. Rows: fallback/fallback, fallback/fallback.",
+   "pass": true,
+   "mode": "mock_malformed",
+   "checks": [
+    {
+     "ok": true,
+     "label": "Crisis visible: chat after mock_malformed"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: chat after mock_malformed"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: chat after mock_malformed"
+    },
+    {
+     "ok": true,
+     "label": "skill links shown"
+    },
+    {
+     "ok": true,
+     "label": "Crisis visible: breathing closing after mock_malformed"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: breathing closing after mock_malformed"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: breathing closing after mock_malformed"
+    },
+    {
+     "ok": true,
+     "label": "status logged"
+    },
+    {
+     "ok": true,
+     "label": "two fallback rows"
+    },
+    {
+     "ok": true,
+     "label": "breathing fallback"
+    },
+    {
+     "ok": true,
+     "label": "chat fallback"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [
+    "chat after mock_malformed",
+    "breathing closing after mock_malformed"
+   ],
+   "timings": [
+    {
+     "label": "breathing-mock_malformed",
+     "planned_ms": 75000,
+     "measured_ms": 75011,
+     "pauses_ms": 0,
+     "crisis_ms": 0,
+     "setup_ms": 34
+    }
+   ],
+   "console": [
+    "[timing] setup_ms=34 (entry and skill pick, reported separately)",
+    "[model] acknowledgment status=fallback latency_ms=0",
+    "[timing] exercise measured_ms=75011 pauses_ms=0 crisis_ms=0 planned_ms=75000 end_reason=completed"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/conversations",
+    "POST /api/conversations",
+    "GET /api/conversations",
+    "GET /api/conversations/1/messages",
+    "POST /api/conversations/1/messages",
+    "GET /api/conversations",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/acknowledgment",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S25",
+   "group": "Failure",
+   "title": "Backend down from the start",
+   "does": "Opens the app with no backend, uses Crisis, Chat, Profile, and a full reframe.",
+   "expected": "Crisis works. Neutral notices. Skills run; the reframe shows its fallback.",
+   "observed": "Crisis opened on 4 screens. Chat and Profile showed neutral notices. Reframe finished with \"You've noted another way to look at it.\"",
+   "pass": true,
+   "mode": "no backend",
+   "checks": [
+    {
+     "ok": true,
+     "label": "Crisis visible: home, backend down"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: home, backend down"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: home, backend down"
+    },
+    {
+     "ok": true,
+     "label": "Crisis visible: chat, backend down"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: chat, backend down"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: chat, backend down"
+    },
+    {
+     "ok": true,
+     "label": "Crisis visible: profile, backend down"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: profile, backend down"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: profile, backend down"
+    },
+    {
+     "ok": true,
+     "label": "Crisis visible: reframe, backend down"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: reframe, backend down"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: reframe, backend down"
+    },
+    {
+     "ok": true,
+     "label": "fallback reflection"
+    },
+    {
+     "ok": true,
+     "label": "\"FICT-DOWN\" stored nowhere"
+    },
+    {
+     "ok": true,
+     "label": "\"FICT-DOWN\" sent nowhere"
+    },
+    {
+     "ok": true,
+     "label": "nothing in browser storage"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [
+    "home, backend down",
+    "chat, backend down",
+    "profile, backend down",
+    "reframe, backend down"
+   ],
+   "timings": [],
+   "console": [
+    "[timing] setup_ms=31 (entry and skill pick, reported separately)",
+    "[session] write failed: /sessions -> HTTP 500",
+    "[timing] exercise measured_ms=9335 pauses_ms=0 crisis_ms=33 planned_ms=70000 end_reason=completed",
+    "[session] write failed: /sessions/00387ca9-6b3f-4976-99da-e68d00f70c2f/end -> HTTP 500"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/conversations",
+    "POST /api/conversations",
+    "GET /api/profile",
+    "GET /api/history",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/reflection",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S26",
+   "group": "Failure",
+   "title": "Backend stops mid-exercise",
+   "does": "The backend stops during step 2 of STOP.",
+   "expected": "The exercise finishes. Crisis works. The session has no end record.",
+   "observed": "Finished and reached Done. Crisis opened twice. The row has no end reason, so History shows \"Not finished\".",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "Crisis visible: STOP after backend stopped"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: STOP after backend stopped"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: STOP after backend stopped"
+    },
+    {
+     "ok": true,
+     "label": "Crisis visible: done after backend stopped"
+    },
+    {
+     "ok": true,
+     "label": "Crisis content shown: done after backend stopped"
+    },
+    {
+     "ok": true,
+     "label": "Crisis opened with no request: done after backend stopped"
+    },
+    {
+     "ok": true,
+     "label": "no end record, as expected"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [
+    "STOP after backend stopped",
+    "done after backend stopped"
+   ],
+   "timings": [],
+   "console": [
+    "[timing] setup_ms=38 (entry and skill pick, reported separately)",
+    "[timing] exercise measured_ms=9481 pauses_ms=0 crisis_ms=33 planned_ms=60000 end_reason=completed",
+    "[session] write failed: /sessions/9f3da6d3-ed07-4e80-8cc2-6a8d10c2f305/end -> HTTP 500"
+   ],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/profile",
+    "POST /api/sessions",
+    "POST /api/sessions/<id>/end"
+   ]
+  },
+  {
+   "id": "S27",
+   "group": "Data",
+   "title": "Delete all",
+   "does": "Opens Profile, taps Delete all, confirms.",
+   "expected": "Profile and history are gone, with empty states. Home says Welcome.",
+   "observed": "Rows left in sessions, messages, feedback, conversations, profile: 0, 0, 0, 0, 0. Empty states shown. Home says Welcome.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "all tables empty"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [],
+   "console": [],
+   "requests": [
+    "GET /api/profile",
+    "GET /api/conversations",
+    "POST /api/conversations",
+    "GET /api/conversations",
+    "GET /api/conversations/1/messages",
+    "POST /api/conversations/1/messages",
+    "GET /api/conversations",
+    "GET /api/profile",
+    "GET /api/history",
+    "DELETE /api/history",
+    "GET /api/profile",
+    "GET /api/history",
+    "GET /api/history",
+    "GET /api/profile"
+   ]
+  },
+  {
+   "id": "S28",
+   "group": "Data",
+   "title": "Crisis by keyboard only",
+   "does": "Tabs to Crisis, presses Enter, then Escape.",
+   "expected": "Panel opens, focus moves in, Escape closes it, focus returns.",
+   "observed": "Enter opened the panel with focus inside. Escape closed it and focus returned to Crisis.",
+   "pass": true,
+   "mode": "mock",
+   "checks": [
+    {
+     "ok": true,
+     "label": "focus moved into the panel"
+    },
+    {
+     "ok": true,
+     "label": "Escape closed it, focus returned"
+    }
+   ],
+   "failed": [],
+   "crisisScreens": [],
+   "timings": [],
+   "console": [],
+   "requests": [
+    "GET /api/profile"
+   ]
+  }
+ ]
+}

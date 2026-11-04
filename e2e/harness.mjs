@@ -39,7 +39,7 @@ function start(cmd, args, options) {
 
 async function waitFor(url, child) {
   for (let i = 0; i < 100; i++) {
-    if (child.exitCode !== null) throw new Error(`process exited early:\n${child.log}`)
+    if (child.exitCode !== null || child.signalCode !== null) throw new Error(`process exited early:\n${child.log}`)
     try {
       if ((await fetch(url)).ok) return
     } catch {}
@@ -49,7 +49,7 @@ async function waitFor(url, child) {
 }
 
 async function stopChild(child) {
-  if (!child || child.exitCode !== null) return
+  if (!child || child.exitCode !== null || child.signalCode !== null) return
   const gone = new Promise((r) => child.on('exit', r))
   child.kill()
   await gone

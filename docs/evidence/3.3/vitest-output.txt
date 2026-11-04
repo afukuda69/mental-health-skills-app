@@ -1,0 +1,83 @@
+# frontend vitest, 2026-11-04 13:23 EST, macOS
+$ cd frontend && npx vitest run --reporter=verbose
+
+ RUN  v2.1.8 /Users/owner/mental-health-skills-app-3.3/frontend
+
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --text text is at least 4.5:1 on every background
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --muted text is at least 4.5:1 on every background
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --faint text is at least 4.5:1 on every background
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --accent text is at least 4.5:1 on every background
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > deep-blue text on the pale-blue secondary button is at least 4.5:1
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > white button text on --accent is at least 4.5:1
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > coral crisis text is at least 4.5:1 on its pale coral fill and on white
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --circle-edge is at least 3:1 (non-text) on --bg
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --circle-edge is at least 3:1 (non-text) on --tint
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --crisis-border is at least 3:1 (non-text) on --surface
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --status-completed is at least 3:1 (non-text) on --surface
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --status-stopped is at least 3:1 (non-text) on --surface
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --status-left is at least 3:1 (non-text) on --surface
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --skill-breathing is at least 3:1 (non-text) on --surface
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --skill-stop is at least 3:1 (non-text) on --surface
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --skill-reframe is at least 3:1 (non-text) on --surface
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > no colour token is green
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > muted and accent text stay at least 4.5:1 on the wave colours behind the page
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > the stylesheet has no animation (motion only on the breathing cue, D6)
+ ✓ tests/crisisKeywords.test.js > reads the shared phrase list, same matches as the backend
+ ✓ tests/timing.test.js > breathing schedule > plans 75 s, within the 90 s budget
+ ✓ tests/timing.test.js > breathing schedule > uses 4 s in / 6 s out for 7 cycles
+ ✓ tests/timing.test.js > breathing schedule > walks intro -> breathing -> closing
+ ✓ tests/timing.test.js > exercise clock > excludes user pauses and crisis time from measured time
+ ✓ tests/timing.test.js > exercise clock > counts overlap of pause and crisis as crisis time only
+ ✓ tests/steps.test.js > STOP schedule > has the four design.md steps in order
+ ✓ tests/steps.test.js > STOP schedule > plans 60 s (15 s per screen, design.md section d), within 90 s
+ ✓ tests/steps.test.js > reframe schedule > has three optional input steps and a reflection
+ ✓ tests/steps.test.js > reframe schedule > plans 70 s assuming Next at each budget (3 x 20 s + 10 s reflection), within 90 s
+ ✓ tests/steps.test.js > Next waits 2 s per step, which fits inside every step budget
+stdout | tests/stopPrivacy.test.js > hides the note until asked, and offers it only on the Observe step
+[timing] setup_ms=0 (entry and skill pick, reported separately)
+
+stdout | tests/reframePrivacy.test.js > keeps steps 1-2 private and sends only the step-3 answer for the reflection
+[timing] setup_ms=0 (entry and skill pick, reported separately)
+
+stdout | tests/stopPrivacy.test.js > hides the note until asked, and offers it only on the Observe step
+[timing] exercise measured_ms=5000 pauses_ms=0 crisis_ms=0 planned_ms=60000 end_reason=left
+
+stdout | tests/stopPrivacy.test.js > never passes the note to the API client, through to the end of the session
+[timing] setup_ms=0 (entry and skill pick, reported separately)
+
+stdout | tests/reframePrivacy.test.js > keeps steps 1-2 private and sends only the step-3 answer for the reflection
+[timing] exercise measured_ms=10000 pauses_ms=0 crisis_ms=0 planned_ms=70000 end_reason=completed
+
+stdout | tests/reframePrivacy.test.js > a crisis phrase opens the panel, keeps the text, and is never sent
+[timing] setup_ms=0 (entry and skill pick, reported separately)
+
+stdout | tests/stopPrivacy.test.js > never passes the note to the API client, through to the end of the session
+[timing] exercise measured_ms=10000 pauses_ms=0 crisis_ms=0 planned_ms=60000 end_reason=completed
+
+stdout | tests/reframePrivacy.test.js > a crisis phrase opens the panel, keeps the text, and is never sent
+[timing] exercise measured_ms=7500 pauses_ms=0 crisis_ms=0 planned_ms=70000 end_reason=left
+
+ ✓ tests/reframePrivacy.test.js > keeps steps 1-2 private and sends only the step-3 answer for the reflection
+ ✓ tests/reframePrivacy.test.js > a crisis phrase opens the panel, keeps the text, and is never sent
+stdout | tests/stopPrivacy.test.js > does not send the note when stopped mid-exercise, and clears it
+[timing] setup_ms=0 (entry and skill pick, reported separately)
+[timing] exercise measured_ms=5000 pauses_ms=0 crisis_ms=0 planned_ms=60000 end_reason=stopped
+
+stdout | tests/stopPrivacy.test.js > a crisis phrase in the note opens the panel once, keeps the text, and is not sent
+[timing] setup_ms=0 (entry and skill pick, reported separately)
+
+stdout | tests/stopPrivacy.test.js > a crisis phrase in the note opens the panel once, keeps the text, and is not sent
+[timing] exercise measured_ms=5000 pauses_ms=0 crisis_ms=0 planned_ms=60000 end_reason=left
+
+ ✓ tests/stopPrivacy.test.js > hides the note until asked, and offers it only on the Observe step
+ ✓ tests/stopPrivacy.test.js > never passes the note to the API client, through to the end of the session
+ ✓ tests/stopPrivacy.test.js > does not send the note when stopped mid-exercise, and clears it
+ ✓ tests/stopPrivacy.test.js > a crisis phrase in the note opens the panel once, keeps the text, and is not sent
+ ✓ tests/crisisRoute.test.js > crisis panel opens from the entry screen with the backend down
+ ✓ tests/crisisRoute.test.js > crisis components import only static content: no fetch, no await, no api module
+
+ Test Files  7 passed (7)
+      Tests  38 passed (38)
+   Start at  13:23:36
+   Duration  526ms (transform 219ms, setup 0ms, collect 521ms, tests 77ms, environment 468ms, prepare 345ms)
+
