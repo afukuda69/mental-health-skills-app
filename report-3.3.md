@@ -1,7 +1,7 @@
 # Assignment 3.3 — Integration, Evaluation, and Demonstration: Submission
 
 - **Repository:** `https://github.com/afukuda69/mental-health-skills-app`
-- **Commit:** `SUBMITTED_COMMIT_SHA`
+- **Commit:** `15d8789111ac422d3d90e03166356d4e464aa833`
 - **Demo recording:** DEMO_RECORDING_LINK
 - **Process screencast:** PROCESS_RECORDING_LINK
 
