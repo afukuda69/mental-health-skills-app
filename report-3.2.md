@@ -1,7 +1,7 @@
 # Assignment 3.2 — Working Application and Safety: Submission
 
 - **Repository:** `https://github.com/afukuda69/mental-health-skills-app`
-- **Commit:** `SUBMITTED_COMMIT_SHA`
+- **Commit:** `ecb794e585a55c8ff50edd90069f27773f8b3175`
 
 ## Documents and evidence
 
