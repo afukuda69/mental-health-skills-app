@@ -44,7 +44,7 @@ export const SKILLS = {
     steps: [
       { title: 'Stop.', text: "Pause what you're doing for a moment.", stepMs: 15000 },
       { title: 'Take a step back.', text: 'Let yourself take one slow breath.', stepMs: 15000 },
-      { title: 'Observe.', text: 'Notice what is happening inside you and around you. No need to write anything.', stepMs: 15000 },
+      { title: 'Observe.', text: 'Notice what is happening inside you and around you. Writing it down is optional.', optionalNote: true, stepMs: 15000 },
       { title: 'Proceed mindfully.', text: "Choose what you'll do next.", stepMs: 15000 },
     ],
   },

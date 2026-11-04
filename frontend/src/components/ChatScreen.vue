@@ -11,7 +11,7 @@ import AppIcon from './AppIcon.vue'
 const props = defineProps({ conversationId: { type: Number, default: null } })
 const emit = defineEmits(['start', 'navigate', 'crisis'])
 
-const STARTERS = ['Before a presentation', 'Explain the breathing rhythm', 'What is STOP for?']
+const STARTERS = ['Why are these exercises useful?', 'Explain the breathing rhythm', 'What is STOP for?']
 const NEW = 'new'
 
 const conversations = ref([])

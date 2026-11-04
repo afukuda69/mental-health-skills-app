@@ -2,7 +2,7 @@
 // Bottom navigation: Home, Activities, Chat, Profile (with History inside), Crisis. The Crisis tab is CrisisButton,
 // which imports only static content, so it works with the backend down.
 // While an exercise runs, the bar contracts to the Crisis tab alone (D1).
-import AppIcon from './AppIcon.vue'
+import { APP_NAME } from '../content/skills.js'
 import CrisisButton from './CrisisButton.vue'
 
 defineProps({
@@ -21,6 +21,7 @@ const TABS = [
 
 <template>
   <nav class="tabbar" :class="{ contracted }" aria-label="Main">
+    <span class="brand" aria-hidden="true">{{ APP_NAME }}</span>
     <template v-if="!contracted">
       <button
         v-for="t in TABS"
@@ -31,9 +32,8 @@ const TABS = [
         :aria-current="active === t.id ? 'page' : undefined"
         @click="$emit('navigate', t.id)"
       >
-        <span class="icon"><AppIcon :name="t.icon" /></span>
-        <!-- Icons only; the active tab shows its label. Others keep it for screen readers. -->
-        <span :class="active === t.id ? 'name' : 'sr'">{{ t.label }}</span>
+        <!-- Text labels only, no icons. -->
+        <span class="name">{{ t.label }}</span>
       </button>
     </template>
     <CrisisButton @open="$emit('crisis')" />
@@ -90,9 +90,77 @@ const TABS = [
   justify-content: center;
 }
 .name {
-  font-size: 0.75rem;
+  font-size: 0.9rem;
 }
-.tab.active .icon {
+.tab.active {
   background: var(--secondary);
+}
+.brand {
+  display: none;
+}
+
+/* Wide screens: a full-width top navigation bar instead of the floating pill. */
+@media (min-width: 900px) {
+  .tabbar,
+  .tabbar.contracted {
+    top: 0;
+    bottom: auto;
+    left: 0;
+    transform: none;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    height: var(--tabbar-h);
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 0 40px;
+    border-radius: 0;
+    box-shadow: 0 1px 0 var(--line), 0 2px 10px rgba(27, 39, 51, 0.05);
+  }
+  .brand {
+    display: block;
+    margin-right: auto;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .tab {
+    flex: none;
+    flex-direction: row;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 0.95rem;
+  }
+  .tab .icon {
+    width: auto;
+    height: auto;
+    background: none;
+  }
+  .tab.active {
+    background: var(--secondary);
+  }
+  .tab.active .icon {
+    background: none;
+  }
+  /* Show every label on wide screens (narrow screens show only the active one). */
+  .tab .sr,
+  .tab .name {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    font-size: 0.95rem;
+  }
+  .tabbar :deep(.crisis-button) {
+    flex: none;
+    flex-direction: row;
+    gap: 6px;
+    margin-left: 8px;
+    padding: 8px 16px;
+    background: var(--crisis-bg);
+    font-size: 0.95rem;
+  }
 }
 </style>

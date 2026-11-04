@@ -41,27 +41,95 @@
 html,
 body {
   margin: 0;
-  background: var(--page);
+  background: var(--bg);
+}
+
+/* Static layered waves along the bottom of the page (no motion, D6).
+   Wave colours stay light enough that muted text still meets WCAG AA on them. */
+body::before {
+  content: '';
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  height: 34vh;
+  min-height: 180px;
+  pointer-events: none;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320' preserveAspectRatio='none'><path fill='%23e3eefa' d='M0 120 C240 60 480 60 720 110 C960 160 1200 160 1440 100 L1440 320 L0 320 Z'/><path fill='%23d8e8f7' d='M0 190 C260 140 520 150 760 190 C1000 230 1220 220 1440 170 L1440 320 L0 320 Z'/><path fill='%23d4e5f6' d='M0 260 C280 220 560 230 800 260 C1040 290 1260 280 1440 245 L1440 320 L0 320 Z'/></svg>") bottom / 100% 100% no-repeat;
 }
 
 body {
   color: var(--text);
-  font-family: ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
+  font-family: 'Nunito Variable', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.5;
 }
 
-/* Mobile-first column, centred on desktop. Room at the bottom for the floating tab bar. */
+/* Full-width, website-style layout. Content is centred with a readable
+   maximum width. Narrow screens keep the floating bottom tab bar; wide
+   screens (900px+) get a top navigation bar instead (see TabBar.vue). */
 #app {
-  max-width: 480px;
+  position: relative;
+  z-index: 1;
+  width: 100%;
   min-height: 100vh;
-  margin: 0 auto;
-  background: var(--bg);
+  background: transparent;
   padding-bottom: calc(var(--tabbar-h) + var(--tabbar-gap) * 2 + 8px);
 }
 
 .screen {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
   padding: 20px 20px 24px;
+}
+
+@media (min-width: 900px) {
+  :root {
+    --tabbar-h: 72px;
+  }
+  body {
+    font-size: 18px;
+  }
+  #app {
+    padding-top: var(--tabbar-h);
+    padding-bottom: 48px;
+  }
+  .screen {
+    max-width: 1120px;
+    padding: 44px 48px 48px;
+  }
+  h1 {
+    font-size: 2.6rem;
+  }
+  h2 {
+    font-size: 1.6rem;
+  }
+  .card {
+    padding: 26px;
+  }
+  .icon-tile {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+  }
+  button {
+    padding: 14px 22px;
+  }
+  button.primary {
+    padding: 18px 22px;
+    font-size: 1.1rem;
+  }
+}
+/* Large monitors: scale up a little more. */
+@media (min-width: 1400px) {
+  body {
+    font-size: 19px;
+  }
+  .screen {
+    max-width: 1240px;
+  }
 }
 
 .section-label {
