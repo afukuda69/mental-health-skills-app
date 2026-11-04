@@ -64,6 +64,14 @@ describe('contrast on the baby-blue palette', () => {
     }
   })
 
+  it('muted and accent text stay at least 4.5:1 on the wave colours behind the page', () => {
+    const waves = [...css.matchAll(/fill='%23([0-9a-fA-F]{6})'/g)].map((m) => `#${m[1]}`)
+    expect(waves.length).toBeGreaterThan(0)
+    for (const wave of waves) for (const name of ['text', 'muted', 'faint', 'accent']) {
+      expect(contrast(token(name), wave)).toBeGreaterThanOrEqual(4.5)
+    }
+  })
+
   it('the stylesheet has no animation (motion only on the breathing cue, D6)', () => {
     expect(css).not.toMatch(/@keyframes|animation\s*:/)
   })

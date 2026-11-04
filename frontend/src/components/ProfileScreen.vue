@@ -7,9 +7,10 @@ import { deleteAllHistory, resetProfile, updateProfile } from '../api.js'
 import { CHECKIN_LABELS, SKILLS } from '../content/skills.js'
 import AppIcon from './AppIcon.vue'
 import HistoryView from './HistoryView.vue'
+import PageHeader from './PageHeader.vue'
 
 const props = defineProps({ profile: { type: Object, default: null } })
-const emit = defineEmits(['changed', 'open-conversation'])
+const emit = defineEmits(['changed', 'open-conversation', 'navigate', 'retry'])
 
 const nameDraft = ref(props.profile?.display_name ?? '')
 const notice = ref('')
@@ -60,11 +61,14 @@ async function deleteAll() {
 </script>
 
 <template>
-  <main class="screen profile">
-    <h1>Profile</h1>
-    <p class="muted intro">One local profile, saved on this computer only. Nobody else sees it.</p>
+  <main class="screen narrow profile">
+    <PageHeader title="Profile" subtitle="What the app remembers, saved only on this computer." />
 
-    <p v-if="!profile" class="muted">The profile can't be loaded right now.</p>
+    <div v-if="!profile" class="state-note" role="status">
+      <p class="state-title">The profile can't be loaded right now</p>
+      <p class="state-text">The skills and Crisis still work.</p>
+      <button type="button" @click="emit('retry')">Try again</button>
+    </div>
     <template v-else>
       <p class="group-label">About you</p>
       <div class="group">
@@ -159,24 +163,25 @@ async function deleteAll() {
       <p v-if="notice" class="muted" role="status">{{ notice }}</p>
     </template>
 
-    <HistoryView :key="historyKey + (profile?.updated_at ?? '')" @open-conversation="emit('open-conversation', $event)" />
+    <HistoryView
+      :key="historyKey + (profile?.updated_at ?? '')"
+      @open-conversation="emit('open-conversation', $event)"
+      @navigate="emit('navigate', $event)"
+    />
   </main>
 </template>
 
 <style scoped>
-.intro {
-  margin: -8px 0 8px;
-}
 .group-label {
-  margin: 20px 6px 6px;
-  font-size: 0.9rem;
-  font-weight: 600;
+  margin: var(--space-5) var(--space-1) var(--space-2);
+  font-weight: 700;
   color: var(--muted);
 }
 /* Settings-style group: rows separated by hairlines, no cards. */
 .group {
   background: var(--surface);
-  border-radius: 14px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   overflow: hidden;
 }
 .setting {

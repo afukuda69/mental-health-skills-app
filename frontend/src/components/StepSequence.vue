@@ -89,7 +89,7 @@ defineExpose({ index, clientId: session.clientId })
 </script>
 
 <template>
-  <ExerciseFrame :title="skill.label">
+  <ExerciseFrame :title="skill.label" :subtitle="skill.subtitle">
     <div>
       <ol class="dots" :aria-label="`Step ${index + 1} of ${steps.length}`">
         <li v-for="(s, i) in steps" :key="i" :class="{ done: i < index, current: i === index }"></li>
@@ -107,8 +107,7 @@ defineExpose({ index, clientId: session.clientId })
         </div>
       </div>
       <p class="notes muted small">
-        Stop is always available. Opening Crisis pauses the timer.<br />
-        Sessions save when you stop, finish, or leave this screen. Paused time is excluded.
+        Opening Crisis pauses the timer.
       </p>
     </div>
   </ExerciseFrame>

@@ -111,7 +111,7 @@ const circleStyle = computed(() =>
 </script>
 
 <template>
-  <ExerciseFrame :title="skill.label">
+  <ExerciseFrame :title="skill.label" :subtitle="skill.subtitle">
     <div class="circle-area">
       <div class="ring">
         <div class="circle" :class="{ still: !animate, out: !animate && pos.phase === 'out' }" :style="circleStyle"></div>
@@ -158,8 +158,7 @@ const circleStyle = computed(() =>
       <input v-model="animate" type="checkbox" role="switch" @change="emit('animate-change', animate)" />
     </label>
     <p class="notes muted small">
-      Stop exercise is always available. Opening Crisis pauses the timer.<br />
-      Sessions save when you stop, finish, or leave this page. Paused time is excluded.
+      Opening Crisis pauses the timer.
     </p>
   </ExerciseFrame>
 </template>

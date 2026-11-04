@@ -5,6 +5,7 @@
 import { SKILLS } from '../content/skills.js'
 import { plannedSeconds } from '../timing.js'
 import AppIcon from './AppIcon.vue'
+import PageHeader from './PageHeader.vue'
 
 defineProps({ usualSkill: { type: String, default: null } })
 defineEmits(['start', 'navigate'])
@@ -14,7 +15,7 @@ const ORDER = ['breathing', 'stop', 'reframe']
 
 <template>
   <main class="screen">
-    <h1>Activities</h1>
+    <PageHeader title="Activities" subtitle="Three short skills. Pick any one, any time." />
     <ul class="skills">
       <li v-for="id in ORDER" :key="id" class="skill" :class="id">
         <button type="button" class="row" :aria-label="`Start ${SKILLS[id].label}`" @click="$emit('start', id)">
@@ -51,7 +52,8 @@ const ORDER = ['breathing', 'stop', 'reframe']
   margin: 0 0 20px;
   padding: 0;
   background: var(--surface);
-  border-radius: 14px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   overflow: hidden;
 }
 .skill + .skill {

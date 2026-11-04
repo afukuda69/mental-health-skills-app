@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { BUTTONS, DONE } from '../content/skills.js'
+import PageHeader from './PageHeader.vue'
 
 defineProps({ stopped: { type: Boolean, default: false } })
 defineEmits(['restart'])
@@ -15,28 +16,23 @@ function close() {
 </script>
 
 <template>
-  <main class="screen">
-    <div class="card done">
-      <h1>{{ stopped ? DONE.stopped : DONE.finished }}</h1>
-      <div class="actions">
-        <button type="button" class="primary" @click="$emit('restart')">{{ BUTTONS.backToStart }}</button>
-        <button type="button" @click="close">{{ BUTTONS.close }}</button>
-      </div>
-      <p v-if="showCloseHint" class="muted hint">{{ DONE.closeHint }}</p>
+  <main class="screen narrow">
+    <PageHeader :title="stopped ? DONE.stopped : DONE.finished" :subtitle="DONE.note" />
+    <div class="actions">
+      <button type="button" class="primary" @click="$emit('restart')">{{ BUTTONS.backToStart }}</button>
+      <button type="button" @click="close">{{ BUTTONS.close }}</button>
     </div>
+    <p v-if="showCloseHint" class="muted hint" role="status">{{ DONE.closeHint }}</p>
   </main>
 </template>
 
 <style scoped>
-.done h1 {
-  font-size: 1.6rem;
-}
 .actions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-3);
 }
 .hint {
-  margin: 14px 0 0;
+  margin: var(--space-3) 0 0;
 }
 </style>

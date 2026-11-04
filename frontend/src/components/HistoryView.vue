@@ -9,7 +9,7 @@ import { SKILLS } from '../content/skills.js'
 import { plannedMs } from '../timing.js'
 
 const props = defineProps({ refreshKey: { type: Number, default: 0 } })
-const emit = defineEmits(['open-conversation'])
+const emit = defineEmits(['open-conversation', 'navigate'])
 
 const state = ref('loading')
 const sessions = ref([])
@@ -24,6 +24,7 @@ const seconds = (ms) => (ms == null ? '—' : `${(ms / 1000).toFixed(1)} s`)
 const planned = (s) => s.planned_ms ?? (SKILLS[s.skill] ? plannedMs(SKILLS[s.skill]) : null)
 
 async function load() {
+  state.value = 'loading'
   try {
     const data = await getJSON('/history')
     sessions.value = data.sessions
@@ -40,11 +41,23 @@ defineExpose({ load, refreshKey: props.refreshKey })
 <template>
   <section class="history" aria-labelledby="history-title">
     <h2 id="history-title">History</h2>
-    <p v-if="state === 'loading'" class="muted">Loading</p>
-    <p v-else-if="state === 'error'" class="muted">History can't be loaded right now.</p>
-    <p v-else-if="sessions.length === 0 && conversations.length === 0" class="muted">Nothing saved yet.</p>
+    <p class="muted sub">Newest first. Typed reframe and STOP text is never saved.</p>
+    <div v-if="state === 'loading'" class="state-note" role="status">
+      <p class="state-title">Loading your history</p>
+    </div>
+    <div v-else-if="state === 'error'" class="state-note" role="status">
+      <p class="state-title">History can't be loaded right now</p>
+      <p class="state-text">The skills and Crisis still work.</p>
+      <button type="button" @click="load">Try again</button>
+    </div>
     <template v-else>
-      <ul v-if="sessions.length" class="list">
+      <p class="section-label">Practices</p>
+      <div v-if="sessions.length === 0" class="state-note">
+        <p class="state-title">No practices yet</p>
+        <p class="state-text">Finished and stopped practices appear here.</p>
+        <button type="button" @click="emit('navigate', 'activities')">Choose a skill</button>
+      </div>
+      <ul v-else class="list">
         <li v-for="s in sessions" :key="s.id" class="row">
           <div class="line">
             <span class="dot" :class="s.end_reason ?? 'none'" aria-hidden="true"></span>
@@ -61,8 +74,13 @@ defineExpose({ load, refreshKey: props.refreshKey })
           <p v-for="(m, i) in open[s.id] ? s.messages : []" :key="i" class="muted message">{{ m.text }}</p>
         </li>
       </ul>
-      <template v-if="conversations.length">
-        <p class="section-label">Conversations</p>
+      <p class="section-label">Conversations</p>
+      <div v-if="conversations.length === 0" class="state-note">
+        <p class="state-title">No conversations yet</p>
+        <p class="state-text">Chats you start appear here, and you can reopen them.</p>
+        <button type="button" @click="emit('navigate', 'chat')">Talk it through</button>
+      </div>
+      <template v-else>
         <div class="list">
           <button v-for="c in conversations" :key="c.id" type="button" class="list-row" @click="emit('open-conversation', c.id)">
             <span><span class="title">{{ c.first_line ?? 'Conversation' }}</span><span class="sub">{{ fmt(c.created_at) }} · {{ c.message_count }} messages</span></span>
@@ -75,7 +93,10 @@ defineExpose({ load, refreshKey: props.refreshKey })
 
 <style scoped>
 .history {
-  margin-top: 28px;
+  margin-top: var(--space-6);
+}
+.sub {
+  margin: 0;
 }
 .list {
   list-style: none;
@@ -112,8 +133,15 @@ defineExpose({ load, refreshKey: props.refreshKey })
   border: 2px solid var(--status-left);
 }
 .when {
-  margin-left: auto;
-  font-size: 0.85rem;
+  flex-basis: 100%;
+  margin-left: 18px;
+  font-size: var(--fs-sm);
+}
+@media (min-width: 520px) {
+  .when {
+    flex-basis: auto;
+    margin-left: auto;
+  }
 }
 .detail {
   margin: 4px 0 0 18px;

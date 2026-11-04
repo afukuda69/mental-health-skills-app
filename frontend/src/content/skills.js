@@ -26,6 +26,7 @@ export const SKILLS = {
     available: true,
     kind: 'breathing',
     component: 'BreathingSkill',
+    subtitle: 'Seven slow breaths. Stop whenever you like.',
     intro: 'Breathe in as the circle grows, out as it shrinks. Seven slow breaths.',
     introMs: 5000,
     cycles: 7,
@@ -37,6 +38,7 @@ export const SKILLS = {
   },
   stop: {
     ...meta.stop,
+    subtitle: 'Four short steps. Stop whenever you like.',
     available: true,
     kind: 'steps',
     // design.md section c: each screen advances on Next, no auto-advance.
@@ -50,6 +52,7 @@ export const SKILLS = {
   },
   reframe: {
     ...meta.reframe,
+    subtitle: 'Three short prompts. Typing is optional.',
     available: true,
     kind: 'steps',
     steps: [
@@ -81,6 +84,7 @@ export const BUTTONS = {
 
 export const CHECK_IN = {
   prompt: 'Did this help?',
+  note: 'One tap. It helps the app learn your usual skill.',
   options: [
     { key: 'helped', label: 'Helped' },
     { key: 'didnt_help', label: "Didn't help" },
@@ -92,6 +96,7 @@ export const DONE = {
   finished: 'Done.',
   stopped: "Stopped. That's fine.",
   closeHint: 'You can close this tab now.',
+  note: 'You can go back to the start, or close this tab.',
 }
 
 export const FOOTER = 'Coursework prototype. Not a support service. Nobody monitors this app.'

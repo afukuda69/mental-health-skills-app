@@ -3,9 +3,9 @@
 // every v-if, so Crisis shows on every screen, including exercises, loading and
 // error states. During an exercise, and on the contracted "Overwhelmed" Home,
 // the bar contracts to the Crisis tab alone (D1).
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { getProfile, send, updateProfile } from './api.js'
-import { SKILLS } from './content/skills.js'
+import { APP_NAME, SKILLS } from './content/skills.js'
 import ActivitiesScreen from './components/ActivitiesScreen.vue'
 import BreathingSkill from './components/BreathingSkill.vue'
 import ChatScreen from './components/ChatScreen.vue'
@@ -40,6 +40,31 @@ const activeTab = computed(() => {
 })
 // Sent with the session as the entry choice (Skip sends none), as in 3.2.
 const entryChoice = computed(() => (checkin.value && checkin.value !== 'skip' ? checkin.value : null))
+
+// One document title per screen.
+const SCREEN_TITLES = { home: 'Home', activities: 'Activities', chat: 'Talk it through', profile: 'Profile and history', checkin: 'Did this help?', done: 'Done' }
+watch(
+  [screen, skillId, crisisOpen],
+  () => {
+    const name = crisisOpen.value ? 'Crisis support' : screen.value === 'exercise' ? SKILLS[skillId.value]?.label : SCREEN_TITLES[screen.value]
+    document.title = `${name} · ${APP_NAME}`
+  },
+  { immediate: true },
+)
+
+// Keyboard focus moves into the crisis panel when it opens, and back to where
+// it was when it closes. Lives here because the panel imports only static content.
+let focusBeforeCrisis = null
+watch(crisisOpen, async (open) => {
+  if (open) {
+    focusBeforeCrisis = document.activeElement
+    await nextTick()
+    document.querySelector('.panel')?.focus()
+  } else {
+    await nextTick()
+    focusBeforeCrisis?.focus?.()
+  }
+})
 
 async function loadProfile() {
   try {
@@ -145,6 +170,8 @@ onMounted(loadProfile)
     :profile="profile"
     @changed="(p) => (p ? (profile = p) : loadProfile())"
     @open-conversation="navigate('chat', $event)"
+    @navigate="navigate"
+    @retry="loadProfile"
   />
 
   <TabBar

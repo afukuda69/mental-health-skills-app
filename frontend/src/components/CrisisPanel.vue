@@ -7,8 +7,8 @@ defineEmits(['close'])
 </script>
 
 <template>
-  <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="crisis-title">
-    <div class="panel">
+  <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="crisis-title" @keydown.esc="$emit('close')">
+    <div class="panel" tabindex="-1">
       <h2 id="crisis-title">{{ CRISIS.title }}</h2>
       <p>{{ CRISIS.intro }}</p>
       <ul class="resources">
@@ -40,6 +40,8 @@ defineEmits(['close'])
 .panel {
   width: 100%;
   max-width: 440px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
   padding: 24px;
   border-radius: var(--radius);
   background: var(--surface);

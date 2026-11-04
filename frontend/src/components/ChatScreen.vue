@@ -7,6 +7,7 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { createConversation, getConversationMessages, listConversations, sendChatMessage } from '../api.js'
 import { SKILLS } from '../content/skills.js'
 import AppIcon from './AppIcon.vue'
+import PageHeader from './PageHeader.vue'
 
 const props = defineProps({ conversationId: { type: Number, default: null } })
 const emit = defineEmits(['start', 'navigate', 'crisis'])
@@ -21,6 +22,7 @@ const draft = ref('')
 const sending = ref(false)
 const notice = ref('')
 const listEl = ref(null)
+const loadingMessages = ref(false)
 
 const lastReply = computed(() => [...messages.value].reverse().find((m) => m.role !== 'user'))
 const offer = computed(() => (lastReply.value?.offer_skill ? SKILLS[lastReply.value.offer_skill] : null))
@@ -33,7 +35,7 @@ async function loadList() {
   try {
     conversations.value = await listConversations()
   } catch {
-    notice.value = "Past conversations can't be loaded right now."
+    notice.value = "Past conversations can't be loaded right now. The skills and Crisis still work."
   }
 }
 
@@ -43,11 +45,15 @@ async function loadMessages() {
     messages.value = []
     return
   }
+  loadingMessages.value = true
   try {
     messages.value = await getConversationMessages(selected.value)
     scrollDown()
   } catch {
-    notice.value = "This conversation can't be loaded right now."
+    messages.value = []
+    notice.value = "This conversation can't be loaded right now. The skills and Crisis still work."
+  } finally {
+    loadingMessages.value = false
   }
 }
 
@@ -73,7 +79,7 @@ async function send() {
     scrollDown()
     loadList()
   } catch {
-    notice.value = "Messages can't be sent right now. The skills and Crisis support still work."
+    notice.value = "Messages can't be sent right now. The skills and Crisis still work."
   } finally {
     sending.value = false
   }
@@ -87,11 +93,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <main class="screen chat">
+  <main class="screen narrow chat">
     <!-- Always visible while the chat is open. -->
-    <header class="limits" role="note">Coursework skills prototype. Not a therapist. Can't diagnose.</header>
-    <h1 class="title">Talk it through</h1>
-    <p class="muted intro">Optional. Use fictional scenarios only. Nobody monitors this chat.</p>
+    <p class="limits">Coursework skills prototype. Not a therapist. Can't diagnose.</p>
+    <PageHeader title="Talk it through" subtitle="Optional. Use fictional scenarios only. Nobody monitors this chat." />
 
     <label class="picker">
       <span class="sr">Conversation</span>
@@ -101,15 +106,17 @@ onMounted(async () => {
       </select>
     </label>
 
-    <div v-if="messages.length === 0" class="starters">
-      <p class="section-label">Where would you like to begin?</p>
+    <div v-if="messages.length === 0 && !loadingMessages" class="starters">
+      <p class="section-label">{{ conversations.length ? 'Start a new conversation, or pick one above.' : 'No conversations yet. Where would you like to begin?' }}</p>
       <button v-for="s in STARTERS" :key="s" type="button" class="card starter" @click="draft = s">{{ s }}</button>
     </div>
 
-    <ol ref="listEl" class="messages">
+    <p v-if="loadingMessages" class="muted" role="status">Loading this conversation</p>
+
+    <ol v-if="messages.length" ref="listEl" class="messages">
       <li v-for="m in messages" :key="m.id" class="bubble" :class="m.role === 'user' ? 'mine' : 'theirs'">
         <p class="who">{{ m.role === 'user' ? 'You · fictional scenario' : 'Assistant' }} <span class="when">{{ fmt(m.created_at) }}</span></p>
-        <p class="text">{{ m.text ?? '(Not saved. It matched the crisis phrase list.)' }}</p>
+        <p class="text">{{ m.text ?? '(This message was not saved.)' }}</p>
       </li>
     </ol>
 
@@ -139,29 +146,21 @@ onMounted(async () => {
 /* A slim bar, always visible while the chat is open. */
 .limits {
   position: sticky;
-  top: 0;
+  top: var(--space-2);
   z-index: 5;
-  margin: -20px -20px 12px;
-  padding: 6px 20px;
+  margin: 0 0 var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
   background: var(--secondary);
   color: var(--accent);
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: 700;
 }
-.title {
-  font-size: 1.35rem;
-  margin-bottom: 4px;
-}
-.intro {
-  margin: -8px 0 16px;
-  font-size: 0.9rem;
-}
-.sr {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
+/* Wide screens have a fixed top nav; keep the bar below it. */
+@media (min-width: 900px) {
+  .limits {
+    top: calc(var(--tabbar-h) + var(--space-2));
+  }
 }
 select,
 textarea {
@@ -232,8 +231,15 @@ select {
 .skill-links {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 14px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+.skill-links {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.skill-links button {
+  flex: 1 1 160px;
 }
 .notice {
   color: var(--muted);

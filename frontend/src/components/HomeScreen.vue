@@ -44,7 +44,7 @@ const PROMISES = [
 <template>
   <!-- Overwhelmed: as little as possible on screen. -->
   <main v-if="contracted" class="screen contracted">
-    <p class="greeting">{{ name ? `Hi, ${name}.` : 'One thing at a time.' }}</p>
+    <h1 class="greeting">{{ name ? `Hi, ${name}.` : 'One thing at a time.' }}</h1>
     <p class="because">
       Suggested because you chose "{{ CHECKIN_LABELS[checkin] }}".
       <button type="button" class="link" @click="emit('checkin', null)">Change</button>
@@ -160,7 +160,7 @@ const PROMISES = [
   display: inline-block;
   margin: 0;
   padding: 4px 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--secondary);
   color: var(--accent);
   font-size: 0.85rem;
@@ -302,8 +302,9 @@ const PROMISES = [
     font-size: 3.2rem;
     margin-bottom: 12px;
   }
+  /* The top nav already shows the app name on wide screens. */
   .app-name {
-    font-size: 1.05rem;
+    display: none;
   }
   .lede {
     font-size: 1.3rem;
