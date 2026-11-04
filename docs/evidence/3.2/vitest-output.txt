@@ -1,8 +1,23 @@
-# frontend vitest, 2026-10-27 11:43 EDT, macOS
+# frontend vitest, 2026-11-04 12:30 EST, macOS
 $ cd frontend && npx vitest run --reporter=verbose
 
  RUN  v2.1.8 /Users/owner/mental-health-skills-app/frontend
 
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --text text is at least 4.5:1 on every background
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --muted text is at least 4.5:1 on every background
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --faint text is at least 4.5:1 on every background
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --accent text is at least 4.5:1 on every background
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > deep-blue text on the pale-blue secondary button is at least 4.5:1
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > white button text on --accent is at least 4.5:1
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > coral crisis text is at least 4.5:1 on its pale coral fill and on white
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --circle-edge is at least 3:1 (non-text) on --bg
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --circle-edge is at least 3:1 (non-text) on --tint
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --crisis-border is at least 3:1 (non-text) on --surface
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --status-completed is at least 3:1 (non-text) on --surface
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --status-stopped is at least 3:1 (non-text) on --surface
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > --status-left is at least 3:1 (non-text) on --surface
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > no colour token is green
+ ✓ tests/contrast.test.js > contrast on the baby-blue palette > the stylesheet has no animation (motion only on the breathing cue, D6)
  ✓ tests/crisisKeywords.test.js > reads the shared phrase list, same matches as the backend
  ✓ tests/timing.test.js > breathing schedule > plans 75 s, within the 90 s budget
  ✓ tests/timing.test.js > breathing schedule > uses 4 s in / 6 s out for 7 cycles
@@ -12,8 +27,8 @@ $ cd frontend && npx vitest run --reporter=verbose
  ✓ tests/crisisRoute.test.js > crisis panel opens from the entry screen with the backend down
  ✓ tests/crisisRoute.test.js > crisis components import only static content: no fetch, no await, no api module
 
- Test Files  3 passed (3)
-      Tests  8 passed (8)
-   Start at  11:43:06
-   Duration  412ms (transform 91ms, setup 0ms, collect 149ms, tests 19ms, environment 98ms, prepare 103ms)
+ Test Files  4 passed (4)
+      Tests  23 passed (23)
+   Start at  12:30:06
+   Duration  430ms (transform 105ms, setup 0ms, collect 155ms, tests 21ms, environment 145ms, prepare 156ms)
 
