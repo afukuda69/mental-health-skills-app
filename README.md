@@ -81,7 +81,7 @@ All automated tests use mocked model responses. No network calls.
 
 ```bash
 cd backend && .venv/bin/python -m pytest      # 64 tests
-cd frontend && npm test                        # 8 tests (vitest)
+cd frontend && npm test                        # 23 tests (vitest)
 ```
 
 Look at the database:

@@ -1,0 +1,14 @@
+# npm run build, 2026-11-04 12:30 EST
+
+> mental-health-skills-frontend@0.2.0 build
+> vite build
+
+vite v6.0.7 building for production...
+transforming...
+✓ 34 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                  0.42 kB │ gzip:  0.29 kB
+dist/assets/index-BlxdSgN3.css   8.99 kB │ gzip:  2.48 kB
+dist/assets/index-CX4jFNIF.js   80.65 kB │ gzip: 31.74 kB
+✓ built in 262ms
