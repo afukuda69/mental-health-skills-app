@@ -78,3 +78,11 @@ def test_diagnosis_request_gets_the_limit_reply(client):
     assert reply["text"] == model_client.CHAT_FALLBACK
     assert "can't assess anything" in reply["text"]
     assert reply["role"] == "fallback" and reply["offer_skill"] is None
+
+
+def test_mock_chat_does_not_claim_a_usual_skill_for_a_new_user(client):
+    cid = client.post("/api/conversations").json()["id"]
+    normal = client.post(f"/api/conversations/{cid}/messages", json={"text": "Fictional: what is STOP for?"}).json()["reply"]
+    offer = client.post(f"/api/conversations/{cid}/messages", json={"text": "Fictional: any help before an exam?"}).json()["reply"]
+    assert "usual" not in normal["text"].lower() and normal["model_status"] == "mock"
+    assert "usual" not in offer["text"].lower() and offer["offer_skill"] == "breathing"

@@ -361,6 +361,9 @@ def _tailor(raw: str, messages: list[dict]) -> str:
     context = messages[1]["content"] if len(messages) > 1 else ""
     name = re.search(r"Name: (?!not given)([^.]+)\.", context)
     usual = re.search(r"Usual skill: (.+?) \[(\w+)\]", context)
+    if not usual:  # a new user has no usual skill; don't claim one
+        raw = raw.replace("Your usual skill here is <<USUAL>>. I can explain it or either of the other two skills.", "I can explain any of the three skills.")
+        raw = raw.replace("your usual skill, <<USUAL>>,", "<<USUAL>>")
     return (
         raw.replace("<<HELLO>>", f"Hi {name.group(1)}. " if name else "")
         .replace("<<USUAL>>", usual.group(1) if usual else "Paced breathing")

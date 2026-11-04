@@ -105,7 +105,7 @@ Everything stays in the local SQLite file. Profile has **Delete all**.
 All automated tests use mocked model responses. No network calls.
 
 ```bash
-cd backend && .venv/bin/python -m pytest      # 103 tests
+cd backend && .venv/bin/python -m pytest      # 104 tests
 cd frontend && npm test                        # 38 tests (vitest)
 ```
 

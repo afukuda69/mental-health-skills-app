@@ -1,10 +1,10 @@
-# backend pytest, 2026-11-04 13:23 EST, macOS, model mocked, network blocked by conftest
+# backend pytest, 2026-11-04 13:28 EST, macOS, model mocked, network blocked by conftest
 $ cd backend && .venv/bin/python -m pytest -v
 ============================= test session starts ==============================
 platform darwin -- Python 3.14.7, pytest-9.1.1, pluggy-1.7.0 -- /Users/owner/mental-health-skills-app-3.3/backend/.venv/bin/python
 rootdir: /Users/owner/mental-health-skills-app-3.3/backend
 plugins: anyio-4.15.1
-collecting ... collected 103 items
+collecting ... collected 104 items
 
 tests/test_chat.py::test_conversation_and_messages_persist PASSED        [  0%]
 tests/test_chat.py::test_unknown_conversation_404 PASSED                 [  1%]
@@ -32,14 +32,14 @@ tests/test_chat.py::test_check_chat_output_accepts[```json\n{"reply": "STOP has 
 tests/test_chat.py::test_check_chat_output_accepts[{"reply": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word end.", "offer_skill": "reframe"}-expected3] PASSED [ 23%]
 tests/test_chat.py::test_model_context_is_prompt_skills_counts_and_last_ten PASSED [ 24%]
 tests/test_chat.py::test_history_summary_has_counts_only PASSED          [ 25%]
-tests/test_chat.py::test_stop_and_reframe_sessions_record_like_breathing PASSED [ 26%]
-tests/test_chat.py::test_delete_all_history PASSED                       [ 27%]
-tests/test_chat.py::test_chat_call_cap_switches_to_mock PASSED           [ 28%]
-tests/test_chat.py::test_migrates_a_3_2_database_keeping_rows PASSED     [ 29%]
-tests/test_crisis.py::test_matches[Fictional: I want to die] PASSED      [ 30%]
-tests/test_crisis.py::test_matches[fictional: I WANT TO   DIE] PASSED    [ 31%]
-tests/test_crisis.py::test_matches[fictional: thinking about suicide] PASSED [ 32%]
-tests/test_crisis.py::test_matches[fictional: I might hurt myself] PASSED [ 33%]
+tests/test_chat.py::test_stop_and_reframe_sessions_record_like_breathing PASSED [ 25%]
+tests/test_chat.py::test_delete_all_history PASSED                       [ 26%]
+tests/test_chat.py::test_chat_call_cap_switches_to_mock PASSED           [ 27%]
+tests/test_chat.py::test_migrates_a_3_2_database_keeping_rows PASSED     [ 28%]
+tests/test_crisis.py::test_matches[Fictional: I want to die] PASSED      [ 29%]
+tests/test_crisis.py::test_matches[fictional: I WANT TO   DIE] PASSED    [ 30%]
+tests/test_crisis.py::test_matches[fictional: thinking about suicide] PASSED [ 31%]
+tests/test_crisis.py::test_matches[fictional: I might hurt myself] PASSED [ 32%]
 tests/test_crisis.py::test_matches[fictional: I\u2019m going to end it all] PASSED [ 33%]
 tests/test_crisis.py::test_no_match[] PASSED                             [ 34%]
 tests/test_crisis.py::test_no_match[None] PASSED                         [ 35%]
@@ -58,22 +58,22 @@ tests/test_model_client.py::test_check_output_rejects[word word word word word w
 tests/test_model_client.py::test_check_output_rejects[Did that help you breathe more slowly today?] PASSED [ 48%]
 tests/test_model_client.py::test_check_output_rejects[You took seven slow breaths!] PASSED [ 49%]
 tests/test_model_client.py::test_check_output_rejects[This can help with your anxiety disorder.] PASSED [ 50%]
-tests/test_model_client.py::test_check_output_rejects[You should do this every morning.] PASSED [ 51%]
-tests/test_model_client.py::test_check_output_rejects[Great job on finishing all seven breaths.] PASSED [ 52%]
-tests/test_model_client.py::test_check_output_rejects[I remember you came in tense last time.] PASSED [ 53%]
-tests/test_model_client.py::test_check_output_rejects[You completed seven paced breaths, adding to your three] PASSED [ 54%]
-tests/test_model_client.py::test_check_output_accepts[You came in feeling tense and took seven slow breaths.] PASSED [ 55%]
-tests/test_model_client.py::test_check_output_accepts[Another way to see it: it may not be as certain as it feels.] PASSED [ 56%]
-tests/test_model_client.py::test_check_output_accepts[word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word.] PASSED [ 57%]
-tests/test_model_client.py::test_live_success_records_latency PASSED     [ 58%]
-tests/test_model_client.py::test_live_exception_falls_back PASSED        [ 59%]
-tests/test_model_client.py::test_live_without_key_falls_back PASSED      [ 60%]
-tests/test_model_client.py::test_max_calls_cap_switches_to_mock PASSED   [ 61%]
-tests/test_model_client.py::test_prompt_context_contains_only_the_planned_fields PASSED [ 62%]
-tests/test_model_client.py::test_fallbacks_match_frontend_skills_js PASSED [ 63%]
-tests/test_model_client.py::test_call_is_abandoned_at_the_deadline_despite_keepalive_bytes PASSED [ 64%]
-tests/test_model_client.py::test_abandoned_slow_calls_do_not_delay_the_next_call PASSED [ 65%]
-tests/test_model_client.py::test_reasoning_off_by_default_and_configurable PASSED [ 66%]
+tests/test_model_client.py::test_check_output_rejects[You should do this every morning.] PASSED [ 50%]
+tests/test_model_client.py::test_check_output_rejects[Great job on finishing all seven breaths.] PASSED [ 51%]
+tests/test_model_client.py::test_check_output_rejects[I remember you came in tense last time.] PASSED [ 52%]
+tests/test_model_client.py::test_check_output_rejects[You completed seven paced breaths, adding to your three] PASSED [ 53%]
+tests/test_model_client.py::test_check_output_accepts[You came in feeling tense and took seven slow breaths.] PASSED [ 54%]
+tests/test_model_client.py::test_check_output_accepts[Another way to see it: it may not be as certain as it feels.] PASSED [ 55%]
+tests/test_model_client.py::test_check_output_accepts[word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word.] PASSED [ 56%]
+tests/test_model_client.py::test_live_success_records_latency PASSED     [ 57%]
+tests/test_model_client.py::test_live_exception_falls_back PASSED        [ 58%]
+tests/test_model_client.py::test_live_without_key_falls_back PASSED      [ 59%]
+tests/test_model_client.py::test_max_calls_cap_switches_to_mock PASSED   [ 60%]
+tests/test_model_client.py::test_prompt_context_contains_only_the_planned_fields PASSED [ 61%]
+tests/test_model_client.py::test_fallbacks_match_frontend_skills_js PASSED [ 62%]
+tests/test_model_client.py::test_call_is_abandoned_at_the_deadline_despite_keepalive_bytes PASSED [ 63%]
+tests/test_model_client.py::test_abandoned_slow_calls_do_not_delay_the_next_call PASSED [ 64%]
+tests/test_model_client.py::test_reasoning_off_by_default_and_configurable PASSED [ 65%]
 tests/test_profile.py::test_empty_profile PASSED                         [ 66%]
 tests/test_profile.py::test_counts_and_learned_usual_update_when_a_session_ends PASSED [ 67%]
 tests/test_profile.py::test_chosen_usual_overrides_learned_until_reset PASSED [ 68%]
@@ -82,7 +82,8 @@ tests/test_profile.py::test_summary_has_labels_and_counts_only PASSED    [ 70%]
 tests/test_profile.py::test_delete_all_clears_the_profile PASSED         [ 71%]
 tests/test_profile.py::test_mock_chat_reply_is_tailored_to_the_profile PASSED [ 72%]
 tests/test_profile.py::test_diagnosis_request_gets_the_limit_reply PASSED [ 73%]
-tests/test_routes.py::test_health PASSED                                 [ 74%]
+tests/test_profile.py::test_mock_chat_does_not_claim_a_usual_skill_for_a_new_user PASSED [ 74%]
+tests/test_routes.py::test_health PASSED                                 [ 75%]
 tests/test_routes.py::test_end_accepts_beacon_text_plain_body PASSED     [ 75%]
 tests/test_routes.py::test_end_rejects_bad_reason_and_unknown_session PASSED [ 76%]
 tests/test_routes.py::test_acknowledgment_saves_message PASSED           [ 77%]
@@ -116,4 +117,4 @@ tests/test_chat.py::test_conversation_and_messages_persist
     from starlette.testclient import TestClient as TestClient  # noqa
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-======================== 103 passed, 1 warning in 2.89s ========================
+======================== 104 passed, 1 warning in 2.86s ========================

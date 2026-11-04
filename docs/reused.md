@@ -20,3 +20,6 @@ Source: the travel application (Assignments 1–2) and the RAG hotel chatbot. Pa
 - `travel.db` has no chat or message table (only `bookings`, `demo_hotel_nights`, `hotels`, `saved_hotel_zip_searches`, `saved_hotels`, `trips`, `users`).
 
 So the `messages` table is new work. The RAG chatbot pattern reused is the LLM call plus context wrapper only (`chat._call_openrouter` with the system prompt and supplied context), as listed in the table above.
+
+**Part 3.3 additions.** The chat (`backend/chat.py`) reuses the same pattern as the hotel chatbot: stored context plus a model call, with a guard in code. Three things are new work rather than reuse: conversation and message persistence, the JSON output validator, and the profile summary. `ChatScreen.vue` keeps `HotelChat.vue`'s fetch, loading, and error pattern, and its chips became starter prompts. It is still optional, not a chat-first layout.
+
