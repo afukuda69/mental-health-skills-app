@@ -7,7 +7,7 @@ import shared from '../../../shared/skills.json'
 
 const meta = Object.fromEntries(shared.skills.map((s) => [s.id, s]))
 
-export const APP_NAME = 'Short skills'
+export const APP_NAME = 'Tidebreak'
 
 export const ENTRY_PROMPT = 'How are you right now?'
 

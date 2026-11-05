@@ -22,7 +22,7 @@ If 8000 or 5173 is taken, use the README's alternate ports. Set the browser to a
 
 | Time | Show | Say |
 |---|---|---|
-| 0:00–0:25 | Home | What it is: a coursework skills prototype, three short skills. Not a support service. Nobody monitors it. Nothing starts by itself (R4). |
+| 0:00–0:25 | Home | What it is: Tidebreak, a coursework skills prototype with three short skills. Not a support service. Nobody monitors it. Nothing starts by itself (R4). |
 | 0:25–1:05 | Tap **Tense or wound up**, then **Change**, then **Overwhelmed**, then **Show everything** | The check-in changes what is suggested. Overwhelmed contracts Home to one button and Crisis (D1). The app can't detect distress, so the user's own tap is the only signal, and one tap undoes it. |
 | 1:05–2:10 | From Activities, **Start Paced breathing**. Tap **Start**. After a few breaths tap **Crisis**, wait, tap **Back to where I was**, then **Stop exercise** | The circle carries the pace, with no countdown (D6). Only Crisis stays in the bar (D1, D4). Crisis pauses the timer and returns to the same cycle. Stop is one tap, no dialog, no guilt (R3). |
 | 2:10–2:50 | **STOP**: step through, open the optional note on Observe | One step per screen (D2). The note is hidden by default, and nothing typed is saved or sent (D3). |

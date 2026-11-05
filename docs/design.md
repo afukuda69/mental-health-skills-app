@@ -1,4 +1,4 @@
-# Design — Mental Health Skills Prototype
+# Design — Tidebreak, a Mental Health Skills Prototype
 
 > Coursework prototype. Not therapy, not diagnosis, not monitoring, not for real crisis use. Findings codes (R1–R4, D1–D6) refer to Assignment 3 overview (Canvas), Section 3.
 

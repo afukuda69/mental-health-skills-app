@@ -1,4 +1,4 @@
-# Mental Health Skills Prototype (Assignment 3)
+# Tidebreak: Mental Health Skills Prototype (Assignment 3)
 
 > **Coursework prototype only.** This is a Penn State course project. It is not therapy, not a diagnostic tool, and not a mental health support service. It does not monitor anyone. Do not use it, or recommend it to anyone, as something to rely on in a difficult moment. All testing uses fictional scenarios.
 >

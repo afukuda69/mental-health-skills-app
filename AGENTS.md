@@ -4,7 +4,7 @@ Notes for AI coding agents working in this repo. Read [docs/design.md](docs/desi
 
 ## Project status
 
-Part 3.3 is complete: paced breathing, STOP, and the cognitive reframe; the optional "Talk it through" chat; one local profile; History; and the check-in on Home. Every departure from the 3.1 design is in docs/design.md §l. Evaluation is in docs/evaluation.md.
+The app is called Tidebreak. Part 3.3 is complete: paced breathing, STOP, and the cognitive reframe; the optional "Talk it through" chat; one local profile; History; and the check-in on Home. Every departure from the 3.1 design is in docs/design.md §l. Evaluation is in docs/evaluation.md.
 
 ## Stack
 

@@ -5,7 +5,7 @@
 - **Demo recording:** DEMO_RECORDING_LINK
 - **Process screencast:** PROCESS_RECORDING_LINK
 
-This submission is late.
+The app is called **Tidebreak**. This submission is late.
 
 ## Documents and evidence
 
