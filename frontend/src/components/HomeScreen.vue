@@ -58,8 +58,8 @@ const PROMISES = [
     <!-- Welcome -->
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-text">
-        <p class="app-name">{{ APP_NAME }}</p>
-        <h1 id="hero-title">{{ name ? `Hi, ${name}.` : 'Welcome.' }}</h1>
+        <h1 id="hero-title">{{ APP_NAME }}</h1>
+        <h2 class="greeting-line">{{ name ? `Hi, ${name}.` : 'Welcome.' }}</h2>
         <p class="lede">Short guided skills for tense moments. Each one takes about a minute, and you can stop at any time.</p>
         <p class="badge">Coursework prototype · not a support service</p>
       </div>
@@ -141,14 +141,18 @@ const PROMISES = [
 .hero-text {
   flex: 1;
 }
-.app-name {
-  margin: 0 0 6px;
-  font-size: 0.9rem;
-  font-weight: 700;
+/* The app name is the page title; the greeting sits below it. */
+.hero h1 {
+  margin: 0;
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1.1;
   color: var(--accent);
 }
-.hero h1 {
-  margin: 0 0 8px;
+.greeting-line {
+  margin: var(--space-1) 0 var(--space-2);
+  font-size: 1.6rem;
+  font-weight: 700;
 }
 .lede {
   margin: 0 0 12px;
@@ -299,12 +303,7 @@ const PROMISES = [
     padding: 12px 4px 8px;
   }
   .hero h1 {
-    font-size: 3.2rem;
-    margin-bottom: 12px;
-  }
-  /* The top nav already shows the app name on wide screens. */
-  .app-name {
-    display: none;
+    font-size: 3.5rem;
   }
   .lede {
     font-size: 1.3rem;

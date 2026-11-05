@@ -121,8 +121,8 @@ const TABS = [
   .brand {
     display: block;
     margin-right: auto;
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1.5rem;
+    font-weight: 800;
     color: var(--accent);
   }
   .tab {
