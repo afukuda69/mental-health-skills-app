@@ -1,7 +1,7 @@
 # Assignment 3.3 — Integration, Evaluation, and Demonstration: Submission
 
 - **Repository:** `https://github.com/afukuda69/mental-health-skills-app`
-- **Commit:** `15d8789111ac422d3d90e03166356d4e464aa833`
+- **Commit:** `7902ce48202cf0c6e80e5ec4832a68dafc06082e`
 - **Demo recording:** https://drive.google.com/file/d/1XvEnZMhjCs-gEkbN3QMfMkP5o-wpRKON/view?usp=drive_link
 - **Process screencast:** Not recorded. The failure, evidence, and decision are documented in writing instead: see [docs/evidence/3.2/server-path-diagnosis.md](docs/evidence/3.2/server-path-diagnosis.md) and the OpenRouter timeout entry in [docs/evidence-log.md](docs/evidence-log.md).
 
