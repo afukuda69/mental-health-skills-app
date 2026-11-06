@@ -2,8 +2,8 @@
 
 - **Repository:** `https://github.com/afukuda69/mental-health-skills-app`
 - **Commit:** `15d8789111ac422d3d90e03166356d4e464aa833`
-- **Demo recording:** DEMO_RECORDING_LINK
-- **Process screencast:** PROCESS_RECORDING_LINK
+- **Demo recording:** https://drive.google.com/file/d/1XvEnZMhjCs-gEkbN3QMfMkP5o-wpRKON/view?usp=drive_link
+- **Process screencast:** Not recorded. The failure, evidence, and decision are documented in writing instead: see [docs/evidence/3.2/server-path-diagnosis.md](docs/evidence/3.2/server-path-diagnosis.md) and the OpenRouter timeout entry in [docs/evidence-log.md](docs/evidence-log.md).
 
 The app is called **Tidebreak**. This submission is late.
 
@@ -22,8 +22,8 @@ The app is called **Tidebreak**. This submission is late.
   - [clean-checkout.md](docs/evidence/3.3/clean-checkout.md): following the README from a fresh clone
   - [chat-context-example.md](docs/evidence/3.3/chat-context-example.md): the exact context sent to the model
   - [pytest-output.txt](docs/evidence/3.3/pytest-output.txt), [vitest-output.txt](docs/evidence/3.3/vitest-output.txt), [build-output.txt](docs/evidence/3.3/build-output.txt)
-  - [screencast-plan.md](docs/evidence/3.3/screencast-plan.md): the script for both recordings
-- Failure used in the process screencast: [server-path-diagnosis.md](docs/evidence/3.2/server-path-diagnosis.md)
+  - [screencast-plan.md](docs/evidence/3.3/screencast-plan.md): the demo script, and the plan for the process screencast, which was not recorded
+- Failure documented in place of the process screencast: [server-path-diagnosis.md](docs/evidence/3.2/server-path-diagnosis.md)
 
 ## What is complete
 
@@ -48,6 +48,7 @@ These checks establish software behavior with fictional scenarios. They say noth
 
 ## Unresolved
 
+- **The process screencast is missing.** It was not recorded. The failure, evidence, and decision are documented in writing instead, as linked at the top of this report.
 - **No peer or user testing.** The check-in wording, the cycle counter, and the value of the acknowledgment are design decisions that no person has tried.
 - **Real tab close** is untested. Leaving is verified by navigating away and hiding the page, but headless browsers send nothing on close.
 - **Not tested:** a real screen reader, browsers other than Chromium, and Windows. The PowerShell commands in the README have not been run.
